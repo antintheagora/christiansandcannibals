@@ -14,19 +14,32 @@ Static marketing site built with vanilla HTML/CSS/JS. Everything required to hos
    ```
 3. **Push to GitHub.**
    ```bash
-   git remote add origin https://github.com/<your-user>/christiansandcannibals.git
+   git remote add origin https://github.com/antintheagora/christiansandcannibals.git
    git push -u origin main
    ```
-4. **Enable Pages.** In the repo on GitHub: `Settings → Pages → Branch`, choose `main` + `/ (root)` and save. After the build finishes, GitHub shows your live URL (e.g., `https://<your-user>.github.io/christiansandcannibals/`).
+4. **Enable Pages.** In the repo on GitHub: `Settings → Pages → Branch`, choose `main` + `/ (root)` and save. After the build finishes, GitHub shows your live URL (e.g., `https://antintheagora.github.io/christiansandcannibals/`).
 
-## Connect a Custom Domain (e.g., `christiansandcannibals.com`)
+## Connect `christiansandcannibals.com`
 
-1. **Buy the domain** from any registrar (Cloudflare, Namecheap, Porkbun, etc.).
-2. **Point DNS at GitHub Pages.**
+The `CNAME` file in this repo is prefilled with `christiansandcannibals.com`, so once DNS is correct GitHub Pages automatically serves that hostname.
+
+1. **Point DNS at GitHub Pages.**
    - Create `A` records for `@` (root) pointing to GitHub Pages IPs: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
-   - Create a `CNAME` record for `www` pointing to `<your-user>.github.io`.
-3. **Tell GitHub about the domain.** Repo `Settings → Pages → Custom domain` → enter `christiansandcannibals.com`. GitHub writes a `CNAME` file for you automatically once it verifies DNS.
-4. **Force HTTPS.** After verification, enable “Enforce HTTPS” in the same Pages settings panel so GitHub provisions a Let’s Encrypt certificate.
+   - Create a `CNAME` record for `www` pointing to `antintheagora.github.io`.
+2. **Tell GitHub about the domain.** Repo `Settings → Pages → Custom domain` → enter `christiansandcannibals.com`. (The existing `CNAME` file keeps this persistent.)
+3. **Force HTTPS.** After verification, enable “Enforce HTTPS” in the same Pages settings panel so GitHub provisions a Let’s Encrypt certificate.
+4. **Wait for DNS propagation.** It may take up to an hour before the domain resolves and GitHub issues the certificate. Use the commands below to confirm the A/CNAME records before retrying the Pages settings page.
+   ```bash
+   # Check root A records resolve to the GitHub IPs
+   nslookup christiansandcannibals.com
+
+   # Check www CNAME resolves to your GitHub Pages hostname
+   nslookup -type=cname www.christiansandcannibals.com
+
+   # `dig` equivalents if installed
+   dig christiansandcannibals.com A +short
+   dig www.christiansandcannibals.com CNAME +short
+   ```
 
 ## Local preview
 
