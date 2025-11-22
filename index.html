@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>CHRISTIANS AND CANNIBALS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Oswald:wght@700&family=VT323&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="crt-overlay"></div>
+    <div class="scanlines"></div>
+    <div id="transition-overlay"></div>
+    <canvas id="bg-canvas"></canvas>
+
+    <audio id="drone-audio" loop>
+        <source src="" type="audio/mpeg"> <!-- Placeholder -->
+    </audio>
+
+    <button id="audio-toggle" class="audio-control">BUMP THE TRACK</button>
+
+    <nav class="main-nav">
+        <div class="logo">CHRISTIANS AND CANNIBALS</div>
+        <div class="links">
+            <a href="#about">About</a>
+            <a href="#screenings">Screenings</a>
+            <a href="#contact">Contact</a>
+            <a href="#soundtrack">Soundtrack</a>
+        </div>
+    </nav>
+
+    <main>
+        <section id="hero" class="hero-section">
+            <div class="hero-content">
+                <div class="hero-flair hero-flair--single">
+                    <span class="hero-tag hero-tag--single">THE INDEPENDENT MOTION PICTURE</span>
+                </div>
+                <h1 id="main-title"><span class="main-title__line">CHRISTIANS</span><span class="main-title__line main-title__line--middle">AND</span><span class="main-title__line">CANNIBALS</span></h1>
+                <p class="subtitle hero-subtitle">TWO THOUSAND AND TWENTY FI' YEARS AFTER THE BIRTH OF JESUS</p>
+            </div>
+        </section>
+
+        <section class="laurel-section" aria-label="San Quentin Film Festival laurel">
+            <div class="laurel-frame">
+                <img src="Resources/Awards/SQFF.png" alt="San Quentin Film Festival laurel" loading="lazy">
+            </div>
+        </section>
+
+        <section id="about" class="content-section">
+            <div class="container">
+                    <h2>A FILM BY YOUNG ANT</h2>
+                    <p class="about-shout">WHO AM I TO YOU?</p>
+
+                <div class="split-block split-block--poster">
+                    <div class="split-block__media">
+                        <div class="feature-media feature-media--poster">
+                            <img src="Resources/Photos/Poster.png" alt="Christians and Cannibals poster artwork" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="split-block__content">
+                        <p class="about-headline"> <span class="about-headline__title">CHRISTIANS AND CANNIBALS</span> is the story of a family’s journey from the villages of American Samoa to
+                            the ghettos of California.
+                        </p>
+
+                        <p>In search of opportunity, Rodney <span class="name-alt"><span class="name-alt__strike">Asuega</span>
+                                Hisatake</span> is adopted by his uncle and brought from Pago Pago, American
+                            Samoa to the public housing projects of the Bay Area. As a young man, he begins his path with fifty
+                            dollars’ worth of crack cocaine, eventually rising to become one of the Bay's most notorious hustlers.
+                        </p>
+
+                        <p>Bare, discordant, and profoundly vulnerable, the film unfolds as a series of moving portraits,
+                            tracing the family’s intertwined lives
+                            and offering a meditation on redemption and the quiet power of grace.
+                        </p>
+                    </div>
+                </div>
+                <div class="section-divider" aria-hidden="true"></div>
+
+                <div class="trailer-block">
+                    <div class="video-wrapper" data-trailer-id="Ha8-HxUzMpY"
+                        data-trailer-host="https://www.youtube-nocookie.com"
+                        data-embed-origin="https://www.youtube.com">
+                        <div id="trailer-player" class="video-placeholder" role="region" aria-label="Trailer player"></div>
+                        <div id="trailer-fallback" class="video-fallback" hidden>
+                            <p>Looks like this trailer can’t play inside an embedded player because of YouTube’s
+                                restrictions (Error 153).</p>
+                            <a class="watch-button" href="https://www.youtube.com/watch?v=Ha8-HxUzMpY" target="_blank"
+                                rel="noopener noreferrer">WATCH ON YOUTUBE</a>
+                        </div>
+                    </div>
+                    <div class="screening-gallery trailer-gallery">
+                        <button class="gallery-toggle" type="button" aria-expanded="false"
+                            aria-controls="screens-gallery-panel" data-target="screens-gallery-panel">
+                            STILLS
+                            <span class="toggle-indicator" aria-hidden="true">+</span>
+                        </button>
+                        <div id="screens-gallery-panel" class="gallery-panel" hidden>
+                            <p class="gallery-caption">Still fragments of the film.</p>
+                        <div class="gallery-grid" role="list">
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-13h59m02s175.png"
+                                    alt="vlcsnap 13h59m02s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h00m16s616.png"
+                                    alt="vlcsnap 14h00m16s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h02m58s998.png"
+                                    alt="vlcsnap 14h02m58s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h03m48s700.png"
+                                    alt="vlcsnap 14h03m48s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h04m29s820.png"
+                                    alt="vlcsnap 14h04m29s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h05m53s226.png"
+                                    alt="vlcsnap 14h05m53s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h07m04s325.png"
+                                    alt="vlcsnap 14h07m04s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h08m14s998.png"
+                                    alt="vlcsnap 14h08m14s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h09m01s751.png"
+                                    alt="vlcsnap 14h09m01s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h09m27s407.png"
+                                    alt="vlcsnap 14h09m27s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h09m48s985.png"
+                                    alt="vlcsnap 14h09m48s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h10m05s975.png"
+                                    alt="vlcsnap 14h10m05s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h11m45s661.png"
+                                    alt="vlcsnap 14h11m45s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h12m19s575.png"
+                                    alt="vlcsnap 14h12m19s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h14m07s407.png"
+                                    alt="vlcsnap 14h14m07s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h16m32s823.png"
+                                    alt="vlcsnap 14h16m32s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h17m00s367.png"
+                                    alt="vlcsnap 14h17m00s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h17m51s821.png"
+                                    alt="vlcsnap 14h17m51s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h19m23s121.png"
+                                    alt="vlcsnap 14h19m23s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h19m57s558.png"
+                                    alt="vlcsnap 14h19m57s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h21m51s181.png"
+                                    alt="vlcsnap 14h21m51s">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Screens/vlcsnap-2025-06-20-14h22m24s970.png"
+                                    alt="vlcsnap 14h22m24s">
+                            </figure>
+                        </div>
+                            <button class="gallery-toggle gallery-toggle-bottom" type="button" aria-expanded="false"
+                                aria-controls="screens-gallery-panel" data-target="screens-gallery-panel">
+                                collapse screens
+                                <span class="toggle-indicator" aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="screenings" class="content-section">
+            <div class="container">
+                <h2>Screenings</h2>
+                <ul class="screening-list">
+                    <li>
+                        <span class="date">APRIL 04, 2025</span>
+                        <span class="location">NEW HAVEN, CONNECTICUT</span>
+                        <span class="venue">YALE UNIVERSITY</span>
+                    </li>
+                    <li>
+                        <span class="date">OCT 23, 2025</span>
+                        <span class="location">YAY AREA, CALIFORNIA</span>
+                        <span class="venue">SAN QUENTIN FILM FESTIVAL</span>
+                    </li>
+                </ul>
+                <div class="section-divider" aria-hidden="true"></div>
+                <div class="field-notes-label" aria-hidden="true">FIELD NOTES</div>
+                <div class="screening-gallery">
+                    <button class="gallery-toggle" type="button" aria-expanded="false"
+                        aria-controls="yale-gallery-panel" data-target="yale-gallery-panel">
+                        YALE UNIVERSITY
+                        <span class="toggle-indicator" aria-hidden="true">+</span>
+                    </button>
+                    <div id="yale-gallery-panel" class="gallery-panel" hidden>
+                        <p class="gallery-caption gallery-description">After a cool year in the Yale Documentary Film Workshop, I held the World Premiere of my film at a private screening with my homies in the Yale Jackson School of Global Affairs Film Society. Black tie and a red carpet.</p>
+                        <div class="gallery-grid gallery-grid--two" role="list">
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Photos/Yale/108cdff4-692d-4780-a799-7eb7a4be89e9.jpg"
+                                    alt="Yale screening still" data-full="Resources/Photos/Yale/108cdff4-692d-4780-a799-7eb7a4be89e9.jpg">
+                            </figure>
+                            <figure class="gallery-item gallery-item--video" role="listitem">
+                                <video src="Resources/Photos/Yale/4f276e17-65fe-4b21-b053-bcdc9e3100e5.mp4"
+                                    playsinline muted autoplay loop preload="metadata"
+                                    poster="Resources/Photos/Yale/108cdff4-692d-4780-a799-7eb7a4be89e9.jpg"
+                                    aria-label="Yale screening video clip"
+                                    data-gallery-type="video"
+                                    data-video-src="Resources/Photos/Yale/4f276e17-65fe-4b21-b053-bcdc9e3100e5.mp4"
+                                    data-full="Resources/Photos/Yale/108cdff4-692d-4780-a799-7eb7a4be89e9.jpg"
+                                    data-poster="Resources/Photos/Yale/108cdff4-692d-4780-a799-7eb7a4be89e9.jpg"></video>
+                            </figure>
+                        </div>
+                        <button class="gallery-toggle gallery-toggle-bottom" type="button" aria-expanded="false"
+                            aria-controls="yale-gallery-panel" data-target="yale-gallery-panel">
+                            collapse
+                            <span class="toggle-indicator" aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="screening-gallery">
+                    <button class="gallery-toggle" type="button" aria-expanded="false"
+                        aria-controls="sq-gallery-panel" data-target="sq-gallery-panel">
+                        SAN QUENTIN FILM FESTIVAL
+                        <span class="toggle-indicator" aria-hidden="true">+</span>
+                    </button>
+                    <div id="sq-gallery-panel" class="gallery-panel" hidden>
+                        <p class="gallery-caption gallery-description">The film was an Official Selection of the San Quentin Film Festival. I remember visiting my pops when he was locked up there, so it was kinda maney going back in after all these years. The festival itself was ill—current and former prisoners and Hollywood types in the same room, watching movies together, laughing and crying. I'll always have love for SQFF for messing with me.</p>
+                        <div class="gallery-grid" role="list">
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Photos/San_Quentin/IMG_2048.JPG" alt="San Quentin Festival still 1">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Photos/San_Quentin/IMG_2049.JPG" alt="San Quentin Festival still 2">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Photos/San_Quentin/IMG_2050.JPG" alt="San Quentin Festival still 3">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Photos/San_Quentin/IMG_2051.JPG" alt="San Quentin Festival still 4">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Photos/San_Quentin/IMG_2053.JPG" alt="San Quentin Festival still 5">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Photos/San_Quentin/IMG_2057.PNG" alt="San Quentin Festival still 6">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Photos/San_Quentin/IMG_2064.JPG" alt="San Quentin Festival still 7">
+                            </figure>
+                            <figure class="gallery-item" role="listitem">
+                                <img src="Resources/Photos/San_Quentin/IMG_2065.JPG" alt="San Quentin Festival still 8">
+                            </figure>
+                        </div>
+                        <button class="gallery-toggle gallery-toggle-bottom" type="button" aria-expanded="false"
+                            aria-controls="sq-gallery-panel" data-target="sq-gallery-panel">
+                            collapse
+                            <span class="toggle-indicator" aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="content-section">
+            <div class="container">
+                <h2>HIT ME UP</h2>
+                <div class="split-block split-block--contact">
+                    <div class="split-block__media">
+                        <div class="feature-media feature-media--headshot">
+                            <img src="Resources/Photos/Headshot.png" alt="Young Ant headshot" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="split-block__content">
+                        <p>Review the film on
+                            <a class="contact-link contact-link--highlight" href="https://letterboxd.com/film/christians-and-cannibals/watch/"
+                                target="_blank" rel="noopener noreferrer">Letterboxd</a>.
+                        </p>
+                        <p>Check out my
+                            <a class="contact-link contact-link--highlight" href="https://instagram.com/AntInTheAgora"
+                                target="_blank" rel="noopener noreferrer">IG</a>
+                            , yadadamean.</p>
+                        <p>Follow my
+                            <a class="contact-link contact-link--highlight" href="https://letterboxd.com/antintheagora/"
+                                target="_blank" rel="noopener noreferrer">personal Letterboxd</a>.
+                            </p>
+                        <div class="section-divider" aria-hidden="true"></div>
+                        <p class="contact-note contact-note--highlight">My new film <span class="contact-note__title">ALL THE WORLD IS AMERICA</span> is coming
+                            in 2026. It is about Liberia &mdash; the first African Republic. Follow me on IG to stay up to date.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="soundtrack" class="content-section">
+            <div class="container soundtrack-container">
+                <h2>Official Soundtrack</h2>
+                <p class="soundtrack-intro">Keep Yo' Eyez on the Prize — 1999, Trump Tight Records</p>
+                <div class="lion-marquee">
+                    <video src="Resources/Music/Album Art/LIONVID.mp4" playsinline autoplay muted loop
+                        poster="Resources/Music/Album Art/LIONGIF.gif"></video>
+                </div>
+                <div class="soundtrack-player">
+                    <div class="tracklist">
+                        <ol id="track-list" class="track-list"></ol>
+                    </div>
+                    <div class="soundtrack-center">
+                        <div class="spinning-disc">
+                            <img id="disc-art" src="Resources/Music/Album Art/CD1.png" alt="Disc art" loading="lazy">
+                            <div class="disc-overlay"></div>
+                        </div>
+                    </div>
+                    <div class="audio-controls">
+                        <button id="audio-prev" class="audio-nav" aria-label="Previous track">⟵</button>
+                        <button id="audio-play" class="audio-play" aria-label="Play/Pause">&#9658;</button>
+                        <button id="audio-next" class="audio-nav" aria-label="Next track">⟶</button>
+                        <div class="volume-control">
+                            <label for="audio-volume">Volume</label>
+                            <input type="range" id="audio-volume" min="0" max="1" step="0.01" value="1">
+                        </div>
+                        <div class="now-playing">
+                            <span id="current-track">Select a track</span>
+                            <div class="time-code">
+                                <span id="current-time">00:00</span> / <span id="total-time">00:00</span>
+                            </div>
+                        </div>
+                        <div class="disc-selector">
+                            <button class="disc-button is-active" data-disc="1" aria-pressed="true">DISC ONE</button>
+                            <button class="disc-button" data-disc="2" aria-pressed="false">DISC TWO</button>
+                        </div>
+                        <input type="range" id="audio-seek" min="0" max="100" value="0" aria-label="Seek track">
+                    </div>
+                    <audio id="soundtrack-audio" preload="metadata"></audio>
+                </div>
+                <div class="mural-wrap">
+                    <div class="mural-image">
+                        <img src="Resources/Music/Album Art/Mural.png" alt="Keep Yo Eyez mural">
+                    </div>
+                    <div class="mural-text">
+                        <p>SPECIAL THANKS TO: GOD, OUR AIGA, THE TRUMP TIGHT FAMILY-KITA / USO CAR CLUB FAMILY, TUI SUISALA,
+                            DIAMOND, CROOKED I, ALEX, SNIPES, GOLD TOES, KUTFATHER, TROY P, COCOMO JOE, DAVE, BUDDHA BOB,
+                            BRANDON, SASSON, FREAKY PHIL, BILLY CASTILLO, KEVIN MITCHELL, ERIC, RUBEN, DEAN, FEATURED ARTISTS,
+                            STREET TEAMS, LAS, POLO, GINO ALL MY USOS LOCKED UP, EVERYONE WHO SUPPORTED AND SHOWED US LOVE I
+                            KNOW THERE ARE MANY MORE WE DIDN’T MENTION—DON’T WORRY WE AIN’T FORGOT Y’ALL. SHOUT TO ALL THE USOS IN
+                            SAMOA, NEW ZEALAND, H-TOWN, FRISCO/BAY AREA, L.A., SAN DIEGO, SEATTLE, UTAH, OREGON AND WORLDWIDE.<br><br>
+                            LAST BUT NOT LEAST, A SPECIAL THANKS TO ALL THE HATERZ THAT INSPIRED US TO SUCCEED!!<br><br>
+                            THE CONGLOMERATEEZ — TRUMP TIGHT-USO CAR CLUB-L BROS. ENT.-MIDNITE TERROR ENT-ACE BEAT-SUCKAFREE
+                            GEAR-BRAND1 DESIGNS-MUCH2MUCH-BIG HEAD ENT-SAMOENOZ ENT-SOMETHIN TERRIBLE RECORDS-BLACK N BROWN-BUTT
+                            NAKED RECORDS<br><br>
+                            &mdash;<br><br>
+                            KEEP YOUR EYEZ ON THE PRIZE BUT DON'T LET IT BLIND YOU. TOO MANY OF US THINK WE ARE HUSTLAS ON THE
+                            RISE AND WE GOT OUR EYES ON THE PRIZE. I DON'T BLAME YOU MY USOS. HOW CAN WE POSSIBLY SEE THROUGH ALL
+                            THE LIES. IT'S A CRIME AND HEARTBREAKING THAT OUR KIDS ASPIRE TO HAVE GOLD RIMS ON A FANCY CAR. WHAT
+                            KIND OF EXAMPLE ARE WE GIVING OUR CHILDREN TO GIVE THEM SUCH SMALL DREAMS AND GOALS. IT'S A TRAP THAT
+                            WE ALL HAVE FELL INTO. AND OUR CHILDREN FOLLOW RIGHT BEHIND US. WE MUST WAKE UP AND OPEN OUR EYES TO
+                            THE TRUTH. THEY HAVE MISLED ALL OF US TO GO FOR THE QUICK INSTANT SATISFACTION—THE FAST MONEY, FAST
+                            CARS—ALL WITHIN OUR LITTLE GHETTOS TO TRAP US INSIDE THE POVERTY AND OPPRESSED NEIGHBORHOODS. EITHER
+                            IN PRISON FOR A DRUG RELATED OFFENSE OR IN A PRISON OF OUR OWN MINDS. IMAGINE BEING BORN, RAISED AND
+                            DYING RIGHT IN THE GHETTOS. I WANT ALL OF YOU TO KNOW THAT THERE IS SO MUCH MORE OUT THERE. THIS WORLD
+                            IS IN YOUR HANDS. YOU CAN DO ANYTHING YOU WANT IN LIFE. YOU CAN TRAVEL THE WHOLE WORLD OVER. VISIT AND
+                            EXPERIENCE ALL IT HAS TO OFFER. IN THIS CAPITALIST SOCIETY WE LIVE IN WE MUST LIVE BY ITS GUIDELINES.
+                            I DON'T HAVE THE ANSWER ON HOW TO LIVE A GOOD LIFE. I CAN ONLY SUGGEST IT MUST BEGIN IN OUR CHILDREN.
+                            EDUCATION IS POWER; BEING AWARE IS THE KEY. A SUCCESSFUL CAREER THAT YOU ENJOY IS VITAL. SURROUND
+                            YOURSELF WITH KINGS AND YOU WILL BE A KING. LETS OPEN OUR EYES AND RECOGNIZE THE BIG PRIZE—FAMILY,
+                            UNITY, SUCCESSFUL CAREER, PERSONAL CONTENTMENT AND HAPPINESS.</p>
+                    </div>
+                </div>
+                <button class="download-toggle" type="button" aria-expanded="false"
+                    aria-controls="download-panel">Download Album</button>
+                <div id="download-panel" class="download-panel" hidden>
+                    <div class="download-cover">
+                        <div class="download-cover-art">
+                            <img src="Resources/Music/Album Art/Cover.png" alt="Keep Yo Eyez on the Prize cover art">
+                        </div>
+                        <div class="download-meta">
+                            <h3 class="album-name">KEEP YO' EYEZ ON THE PRIZE</h3>
+                            <p>Released: 1999</p>
+                            <p>Label: Trump Tight Records</p>
+                        </div>
+                    </div>
+                    <div class="download-tracklist">
+                        <div class="download-tracklist-inner">
+                            <h4>DISC 1</h4>
+                            <p><span class="download-track-number">01.</span> <span class="download-track-title">"DOG EAT DOG
+                                    WORLD" (INTRO)</span> - MOVIE CLIP/SCENE</p>
+                            <p><span class="download-track-number">02.</span> <span class="download-track-title">"HAVE'EM HATIN"
+                                    MAC DRE, YOUNG NADE</span> — Produced by Mr. Laid & Chill Black for Laidblack Productions —
+                                Concept: "R" — Co-Produced: KITA</p>
+                            <p><span class="download-track-number">03.</span> <span class="download-track-title">"EYEZ ON THE
+                                    PRIZE" PETER GUNZ & LORD TARIQ, KUTFATHER</span> — Produced by Jake-One — Concept: Kutfather,
+                                "R"</p>
+                            <p><span class="download-track-number">04.</span> <span class="download-track-title">"YOU AND YOUR
+                                    9MM" DOWN-N-DIRTY CLICK (DIRTY SOUTH)</span> — Courtesy of Sean at Commerce St. Records</p>
+                            <p><span class="download-track-number">05.</span> <span class="download-track-title">"NIGHT SHIFT"
+                                    SAMOENDS feat. RICHIE RICH</span> — Produced by LEV / Grill Studio — Concept: Samoends —
+                                Backing Vocals: Efrain</p>
+                            <p><span class="download-track-number">06.</span> <span class="download-track-title">"GAME TRUMP
+                                    TIGHT" SNOOP DOGG, JT THE BIGGA FIGGA, KUTFATHER</span> — Produced by Jake-One & Vitamin "D"
+                                — Cuts & Scratches: Kutfather — Recorded at Conception Recording Studios, Seattle, WA</p>
+                            <p><span class="download-track-number">07.</span> <span class="download-track-title">"INTERLUDE" SLIM
+                                    THE PALE PIMP</span></p>
+                            <p><span class="download-track-number">08.</span> <span class="download-track-title">"FOLLOW ME" BLACK
+                                    RHINO, SKRILLA MOBB</span> — Produced by Crazy B for Crazy House Productions</p>
+                            <p><span class="download-track-number">09.</span> <span class="download-track-title">"ALL DAY" SAVAGE
+                                    GENTLEMEN</span> — Produced by Laidblack Productions</p>
+                            <p><span class="download-track-number">10.</span> <span class="download-track-title">"ALL MY NIGGAZ"
+                                    2WICE, YUKMOUTH, KNUMBSKULL (LUNIZ), VAS BOSSY</span> — Courtesy of Mike / Pyramid
+                                Records</p>
+                            <p><span class="download-track-number">11.</span> <span class="download-track-title">"SEXY LIL'
+                                    NEIGHBOR" DRE DOG Aka ANDRE NICKATINA</span> — Produced by Laidblack Productions — Concept:
+                                "R"</p>
+                            <p><span class="download-track-number">12.</span> <span class="download-track-title">"MY BLOCKS"
+                                    L.C., DOWN-N-DIRTY HUSTLERS</span> — Produced by Laidblack Productions</p>
+                            <p><span class="download-track-number">13.</span> <span class="download-track-title">"GOTTA GET MY
+                                    PAPER RIGHT" COOLIO, USUAL SUSPECTS, BABY BEESH (Latino Velvet)</span> — Produced by
+                                Laidblack Productions</p>
+                            <p><span class="download-track-number">14.</span> <span class="download-track-title">"CAN'T GO AGAINST
+                                    THE GRAIN" (OUTRO)</span> — MOVIE CLIP</p>
+                            <h4>DISC 2</h4>
+                            <p><span class="download-track-number">01.</span> <span class="download-track-title">"DEAD END"
+                                    (SPOKEN WORD) IPO</span> — Produced by J DEF for Kalifornia Noize Terrorist Prod. —
+                                Recorded at Ace Beat Studios — Engineered/Mixed by J DEF</p>
+                            <p><span class="download-track-number">02.</span> <span class="download-track-title">"PAPER RIDERZ"
+                                    SAMOENOZ ENT.</span> — Courtesy of Samoends Ent.</p>
+                            <p><span class="download-track-number">03.</span> <span class="download-track-title">"OBEY YO' P.O."
+                                    E-40, 2WICE, QURAN</span> — Courtesy of My Nigga 2WICE</p>
+                            <p><span class="download-track-number">04.</span> <span class="download-track-title">"LACE 'EM UP" BIG
+                                    MACK, MAINE-O (11/5), FAMILY TYZ</span> — Produced by Laidblack Productions</p>
+                            <p><span class="download-track-number">05.</span> <span class="download-track-title">"PIMPS & PLAYAS"
+                                    SAN QUINN, G-BOOGIE, & DAVEROSKI</span> — Produced by Laidblack Productions — Concept:
+                                Snipes, "R"</p>
+                            <p><span class="download-track-number">06.</span> <span class="download-track-title">"IT TAKES DIRT TO
+                                    MAKE FLOWERS GROW"</span> — MOVIE CLIP/SCENE</p>
+                            <p><span class="download-track-number">07.</span> <span class="download-track-title">"IT'S THE MOB"
+                                    DUBEE Aka SUGAWOLF, M.O.H.</span> — Produced by Laidblack Productions & M.O.H.</p>
+                            <p><span class="download-track-number">08.</span> <span class="download-track-title">"YOU CAN'T LOOSE"
+                                    B-BOY POSSE, KILOMAI, J-MACK</span> — Produced by Laidblack Productions — Concept: B-Boy
+                                Posse</p>
+                            <p><span class="download-track-number">09.</span> <span class="download-track-title">"DREAMS OF BEING
+                                    RICH" BIG ROB</span> — Produced by Freaky Phil — Background Vocals: Isiah</p>
+                            <p><span class="download-track-number">10.</span> <span class="download-track-title">"SLIPPIN'"
+                                    RUSHE</span> — Produced by Magoo and Diamond (Midnite Terror Ent.)</p>
+                            <p><span class="download-track-number">11.</span> <span class="download-track-title">"EASTSIDE 'G'
+                                    RIDERZ" BROWN-N-PROUD, BABY BEESH (Latino Velvet)</span> — Produced by Brown-N-Proud</p>
+                            <p><span class="download-track-number">12.</span> <span class="download-track-title">"AIN'T NOTHIN'
+                                    CHANGED" CALICO, YOUNG AL, PISTAL ("Usual Suspects")</span> — Produced by Laidblack
+                                Productions</p>
+                            <p><span class="download-track-number">13.</span> <span class="download-track-title">"MY DESTINY"
+                                    USUAL SUSPECTS</span> — Produced by Usual Suspects</p>
+                            <p>Executive Producers: "R", SNIPES and KITA</p>
+                        </div>
+                    </div>
+                    <div class="download-actions">
+                        <a class="download-button" href="Resources/Music/KeepYoEyezAlbum.zip" download>Download Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="gallery-modal" class="gallery-modal" hidden>
+        <div class="gallery-modal__backdrop" data-close-modal></div>
+        <div class="gallery-modal__frame" role="dialog" aria-modal="true" aria-label="Expanded gallery still">
+            <button class="gallery-modal__control gallery-modal__close" type="button"
+                data-gallery-nav="close" aria-label="Close gallery">
+                ×
+            </button>
+            <button class="gallery-modal__control gallery-modal__nav gallery-modal__nav--prev" type="button"
+                data-gallery-nav="prev" aria-label="View previous still">
+                ‹
+            </button>
+            <figure class="gallery-modal__figure">
+                <img id="gallery-modal-image" alt="">
+                <video id="gallery-modal-video" controls playsinline hidden></video>
+                <figcaption id="gallery-modal-caption"></figcaption>
+                <div class="gallery-modal__counter" id="gallery-modal-counter"></div>
+            </figure>
+            <button class="gallery-modal__control gallery-modal__nav gallery-modal__nav--next" type="button"
+                data-gallery-nav="next" aria-label="View next still">
+                ›
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Christians and Cannibals Film. All Rights Reserved.</p>
+        <blockquote class="footer-quote">
+            <p>"It's a mutual, joint-stock world, all meridians. We cannibals must help these Christians."</p>
+            <cite>&mdash; Herman Melville, <span class="footer-quote__work">Moby-Dick</span></cite>
+        </blockquote>
+    </footer>
+
+    <script src="background.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
