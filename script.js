@@ -28,20 +28,16 @@ document.querySelectorAll('a').forEach(anchor => {
 console.log('SYSTEM FAILURE... REBOOTING... CHRISTIANS AND CANNIBALS ONLINE.');
 
 // Responsive nav toggle
-const mainNav = document.querySelector('.main-nav');
 const navToggle = document.querySelector('.nav-toggle');
 const navLinks = document.getElementById('nav-links');
 
-if (mainNav && navToggle && navLinks) {
-    mainNav.classList.add('is-collapsible-nav');
-
+if (navToggle && navLinks) {
     const setNavState = (isOpen) => {
-        mainNav.classList.toggle('is-open', isOpen);
         navToggle.setAttribute('aria-expanded', String(isOpen));
     };
 
     navToggle.addEventListener('click', () => {
-        const nextState = !mainNav.classList.contains('is-open');
+        const nextState = navToggle.getAttribute('aria-expanded') !== 'true';
         setNavState(nextState);
     });
 
@@ -54,7 +50,7 @@ if (mainNav && navToggle && navLinks) {
     });
 
     window.addEventListener('resize', () => {
-        if (window.innerWidth > 900) {
+        if (window.innerWidth > 900 && navToggle.getAttribute('aria-expanded') === 'true') {
             setNavState(false);
         }
     });
@@ -76,8 +72,21 @@ let titleMouseX = -1000; // Start off-screen
 let currentGradientPos = -1000;
 
 if (title) {
+    const compactBreakpoint = window.matchMedia('(max-width: 640px)');
+
+    const applyTitleResponsiveState = () => {
+        if (compactBreakpoint.matches) {
+            title.classList.add('is-compact');
+            title.style.fontSize = '2.4rem';
+        } else {
+            title.classList.remove('is-compact');
+            title.style.fontSize = TITLE_CONFIG.fontSize;
+        }
+    };
+
     // Apply initial config
-    title.style.fontSize = TITLE_CONFIG.fontSize;
+    applyTitleResponsiveState();
+    compactBreakpoint.addEventListener('change', applyTitleResponsiveState);
 
     // Track mouse globally to allow the effect to work even if not directly hovering (as requested "near its position")
     document.addEventListener('mousemove', (e) => {
@@ -132,6 +141,28 @@ if (title) {
 
     updateTitleGradient();
 }
+
+// General Responsive Text Handling
+(function initResponsiveText() {
+    const compactBreakpoint = window.matchMedia('(max-width: 640px)');
+    const logo = document.querySelector('.logo');
+    const sectionTitles = document.querySelectorAll('h2');
+
+    const applyResponsiveState = () => {
+        const isCompact = compactBreakpoint.matches;
+
+        if (logo) {
+            logo.classList.toggle('is-compact', isCompact);
+        }
+
+        sectionTitles.forEach(h2 => {
+            h2.classList.toggle('is-compact', isCompact);
+        });
+    };
+
+    applyResponsiveState();
+    compactBreakpoint.addEventListener('change', applyResponsiveState);
+})();
 
 // Trailer Embed Handling ---------------------------------------------------
 (function initTrailerEmbed() {
@@ -407,11 +438,11 @@ const galleryLightbox = (() => {
     closeBtn?.addEventListener('click', close);
     backdrop?.addEventListener('click', close);
 
-document.addEventListener('keydown', (event) => {
-    if (modal.hidden) {
-        return;
-    }
-    if (event.key === 'Escape') {
+    document.addEventListener('keydown', (event) => {
+        if (modal.hidden) {
+            return;
+        }
+        if (event.key === 'Escape') {
             close();
         } else if (event.key === 'ArrowLeft') {
             move(-1);
