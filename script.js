@@ -27,6 +27,39 @@ document.querySelectorAll('a').forEach(anchor => {
 
 console.log('SYSTEM FAILURE... REBOOTING... CHRISTIANS AND CANNIBALS ONLINE.');
 
+// Responsive nav toggle
+const mainNav = document.querySelector('.main-nav');
+const navToggle = document.querySelector('.nav-toggle');
+const navLinks = document.getElementById('nav-links');
+
+if (mainNav && navToggle && navLinks) {
+    mainNav.classList.add('is-collapsible-nav');
+
+    const setNavState = (isOpen) => {
+        mainNav.classList.toggle('is-open', isOpen);
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+    };
+
+    navToggle.addEventListener('click', () => {
+        const nextState = !mainNav.classList.contains('is-open');
+        setNavState(nextState);
+    });
+
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (link.getAttribute('href')?.startsWith('#')) {
+                setNavState(false);
+            }
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 900) {
+            setNavState(false);
+        }
+    });
+}
+
 // Title Gradient Effect
 const TITLE_CONFIG = {
     gradientColors: ['#028614ff', '#800080', '#197c00ff'], // Bright Red, Muddy Orange, Purple
