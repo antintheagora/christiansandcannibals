@@ -860,6 +860,118 @@ p {
     filter: grayscale(1) sepia(0.55) hue-rotate(-18deg) saturate(2.4) contrast(1.15) brightness(0.65);
 }
 
+/* Game menu --------------------------------------------------------------- */
+
+.game-menu {
+    margin-top: 2rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.game-menu__title {
+    font-family: var(--font-header);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--primary-red);
+    margin-bottom: 0.75rem;
+}
+
+.game-menu__copy {
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.game-shell {
+    margin-top: 0;
+    border: 2px solid var(--primary-red);
+    background: #000;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.35);
+    position: relative;
+    max-width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+}
+
+.game-shell iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+}
+
+.game-menu__actions {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.game-button {
+    padding: 0.65rem 1.8rem;
+    border: 1px solid var(--primary-red);
+    background: rgba(0, 0, 0, 0.85);
+    color: var(--primary-red);
+    font-family: var(--font-header);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 1rem;
+    cursor: pointer;
+    text-shadow: 0 0 6px rgba(255, 0, 0, 0.7);
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.game-button:hover {
+    background: var(--primary-red);
+    color: #000;
+    box-shadow: 0 0 18px rgba(255, 0, 0, 0.7);
+    transform: translateY(-1px);
+}
+
+.game-menu__hint {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.game-shell--fullscreen {
+    position: fixed;
+    inset: 0;
+    margin: 0;
+    border-width: 2px;
+    max-width: none;
+    max-height: none;
+    z-index: 1200;
+    background: #000;
+}
+
+.game-shell--fullscreen iframe {
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 700px) {
+    .game-shell {
+        aspect-ratio: 3 / 4;
+    }
+}
+
+/* Site chrome adjustments when game fullscreen ---------------------------- */
+
+body.is-game-fullscreen .main-nav,
+body.is-game-fullscreen .audio-control,
+body.is-game-fullscreen .crt-overlay,
+body.is-game-fullscreen .scanlines,
+body.is-game-fullscreen #bg-canvas {
+    display: none !important;
+}
+
+body.is-game-fullscreen {
+    overflow: hidden;
+}
+
 .gallery-img-color {
     position: absolute;
     inset: 0;

@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Christians and Cannibals - Prototype</title>
+  <style>
+    :root {
+      --sand: #d6c082;
+      --sand-deep: #c2aa6f;
+      --grass: #5da463;
+      --grass-deep: #4d8b51;
+      --shadow: rgba(0, 0, 0, 0.18);
+      --ink: #0b0b0d;
+      --blood: #e54444;
+      --blood-deep: #b01d1d;
+      --panel: rgba(10, 10, 12, 0.82);
+      --panel-border: rgba(229, 68, 68, 0.5);
+      --text: #f7d7d7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(229, 68, 68, 0.07), transparent 28%), #0a0a0c;
+      color: var(--text);
+      font-family: "Courier New", monospace;
+      overflow: hidden;
+    }
+    canvas { display: block; }
+    #ui {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      font-size: 13px;
+      text-shadow: 1px 1px 0 #000;
+    }
+    .panel {
+      background: var(--panel);
+      background-image: url('Assets/Textures/gs_boxed.png');
+      background-size: 64px 64px;
+      background-repeat: repeat;
+      padding: 8px 10px;
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      max-width: 360px;
+      box-shadow: none;
+    }
+    .hud {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .bar {
+      width: 160px;
+      height: 10px;
+      border: 1px solid var(--panel-border);
+      border-radius: 4px;
+      overflow: hidden;
+      background: rgba(229, 68, 68, 0.18);
+    }
+    .bar__fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blood), var(--blood-deep));
+      width: 100%;
+    }
+    a { color: var(--blood); }
+  </style>
+</head>
+<body>
+  <canvas id="game" width="800" height="600"></canvas>
+  <div id="ui">
+    <div class="panel">
+      <div><strong>Controls</strong></div>
+      <div>Move: WASD / Arrows</div>
+      <div>Attack: Space</div>
+      <div>Emote: E</div>
+      <div>Reset vibe: R</div>
+      <div style="margin-top:6px;">Placeholder colors change per state (idle, walk, attack, emote, death). Swap in sprites per state/direction later.</div>
+    </div>
+    <div class="panel hud">
+      <div>HP</div>
+      <div class="bar"><div id="hp-fill" class="bar__fill"></div></div>
+    </div>
+  </div>
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    const hpFill = document.getElementById('hp-fill');
+
+    // --- Core config -------------------------------------------------------
+    const TILE = 64;
+    const OBJECT_SCALE = 1; // Scales static objects.
+    const CHAR_SCALE = 3.5;   // Scales all characters (24x32 base -> 48x64).
+    const ZOOM = 2; // Camera zoom; closer framing.
+    const WORLD_WIDTH = 26;
+    const WORLD_HEIGHT = 18;
+
+    let gameStarted = false;      // Player has chosen to enter the game.
+    let gameInitialized = false;  // Assets and world constructed.
+    let highScore = 0; // Dummy for now.
+
+    const colors = {
+      sand: getComputedStyle(document.documentElement).getPropertyValue('--sand').trim(),
+      sandDeep: getComputedStyle(document.documentElement).getPropertyValue('--sand-deep').trim(),
+      grass: getComputedStyle(document.documentElement).getPropertyValue('--grass').trim(),
+      grassDeep: getComputedStyle(document.documentElement).getPropertyValue('--grass-deep').trim(),
+    };
+
+    // --- Asset loading helpers ---
+    function loadImage(path) {
+      const img = new Image();
+      img.src = path;
+      return img;
+    }
+
+    // Ground / tiles (lazy-loaded)
+    let tileTextures = null;
+
+    // World objects (lazy-loaded)
+    let objectTextures = null;
+
+    const playerSpritePaths = {
+      idle: {
+        down: ['idlefront1.png', 'idlefront2.png'],
+        up: ['idleback1.png', 'idleback2.png'],
+        left: ['idlefront1.png', 'idlefront2.png'],
+        right: ['idlefront1.png', 'idlefront2.png'],
+      },
+      walk: {
+        down: ['walkdown1.png', 'walkdown2.png'],
+        up: ['walkup1.png', 'walkup2.png'],
+        left: ['walkleft1.png', 'walkleft2.png'],
+        right: ['walkright1.png', 'walkright2.png'],
+      },
+      attack: {
+        // Only left/right assets exist; reuse closest for up/down.
+        down: ['atkright1.png', 'atkright2.png'],
+        up: ['atkleft1.png', 'atkleft2.png'],
+        left: ['atkleft1.png', 'atkleft2.png'],
+        right: ['atkright1.png', 'atkright2.png'],
+      },
+      emote: {
+        down: ['emote1.png', 'emote2.png'],
+        up: ['emote1.png', 'emote2.png'],
+        left: ['emote1.png', 'emote2.png'],
+        right: ['emote1.png', 'emote2.png'],
+      },
+      death: {
+        down: ['death1.png', 'death2.png', 'death3.png'],
+        up: ['death1.png', 'death2.png', 'death3.png'],
+        left: ['death1.png', 'death2.png', 'death3.png'],
+        right: ['death1.png', 'death2.png', 'death3.png'],
+      },
+    };
+
+    let playerSprites = null; // Filled on first game start.
+
+    const mapLayout = [
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
+      [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
+      [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
+      [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    ];
+
+    const baseObjects = [
+      // collW/collH express collision footprint in TILE units.
+      { name: 'fale', x: 5 * TILE, y: 6 * TILE, w: 6 * TILE, h: 4 * TILE, color: '#b88d4d', accent: '#d2a85b', collW: 4, collH: 1 },
+      { name: 'fale-small', x: 17 * TILE, y: 3.5 * TILE, w: 4 * TILE, h: 3 * TILE, color: '#b88d4d', accent: '#d2a85b', collW: 2, collH: 1 },
+      { name: 'moai', x: 14.5 * TILE, y: 11 * TILE, w: 2.5 * TILE, h: 3.5 * TILE, color: '#4b5a5a', accent: '#6b7b7b', collW: 2, collH: 1 },
+      { name: 'palm1', x: 3 * TILE, y: 1.5 * TILE, w: 2 * TILE, h: 3 * TILE, color: '#6f4b2b', accent: '#3d7b3d', type: 'tree', collW: 1, collH: 1 },
+      { name: 'palm2', x: 9 * TILE, y: 1 * TILE, w: 2 * TILE, h: 3 * TILE, color: '#6f4b2b', accent: '#3d7b3d', type: 'tree', collW: 1, collH: 1 },
+      { name: 'palm3', x: 18 * TILE, y: 6 * TILE, w: 2 * TILE, h: 3 * TILE, color: '#6f4b2b', accent: '#3d7b3d', type: 'tree', collW: 1, collH: 1 },
+      { name: 'palm4', x: 22 * TILE, y: 11 * TILE, w: 2 * TILE, h: 3 * TILE, color: '#6f4b2b', accent: '#3d7b3d', type: 'tree', collW: 1, collH: 1 },
+    ];
+    let staticObjects = [];
+
+    // Dynamic state (created on first start)
+    let player;
+    let npcs = [];
+    let projectiles = [];
+    const camera = { x: 0, y: 0, w: canvas.width / ZOOM, h: canvas.height / ZOOM };
+
+    function initGameWorld() {
+      // Textures
+      tileTextures = {
+        sand: loadImage('Assets/Textures/sand.png'),
+        grass: loadImage('Assets/Textures/grass.png'),
+        edge: {
+          up: loadImage('Assets/Textures/gs_up.png'),
+          down: loadImage('Assets/Textures/gs_down.png'),
+          left: loadImage('Assets/Textures/gs_left.png'),
+          right: loadImage('Assets/Textures/gs_right.png'),
+        },
+        corner: {
+          upLeft: loadImage('Assets/Textures/gs_corner_up_left.png'),
+          upRight: loadImage('Assets/Textures/gs_corner_up_right.png'),
+          downRight: loadImage('Assets/Textures/gs_corner_bottom_right.png'),
+          downLeft: loadImage('Assets/Textures/gs_corner_bottom_left.png'),
+        },
+        tri: {
+          up: loadImage('Assets/Textures/gs_tri_up.png'),
+          down: loadImage('Assets/Textures/gs_tri_down.png'),
+          left: loadImage('Assets/Textures/gs_tri_left.png'),
+          right: loadImage('Assets/Textures/gs_tri_right.png'),
+        },
+        boxed: loadImage('Assets/Textures/gs_boxed.png'),
+      };
+
+      objectTextures = {
+        fale: loadImage('Assets/Objects/6x4/fale1.png'),
+        moai: loadImage('Assets/Objects/6x4/moai1.png'),
+        palm: loadImage('Assets/Objects/2x3/palm.png'),
+      };
+
+      // Objects
+      staticObjects = baseObjects.map(obj => {
+        const w = obj.w * OBJECT_SCALE;
+        const h = obj.h * OBJECT_SCALE;
+        const x = obj.x + (obj.w - w) / 2;
+        const y = obj.y + (obj.h - h) / 2;
+        return { ...obj, x, y, w, h };
+      });
+
+      // Sprites
+      playerSprites = {};
+      Object.keys(playerSpritePaths).forEach(state => {
+        playerSprites[state] = {};
+        Object.keys(playerSpritePaths[state]).forEach(dir => {
+          playerSprites[state][dir] = playerSpritePaths[state][dir].map(name =>
+            loadImage(`Assets/Characters/cannibal/${name}`)
+          );
+        });
+      });
+
+      // Entities
+      player = new Player(15 * TILE, 6 * TILE);
+      npcs = [];
+      projectiles = [];
+      seedNPCs();
+      hpFill.style.width = '100%';
+    }
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const keys = {};
+
+    function startGame() {
+      if (!gameInitialized) {
+        initGameWorld();
+        gameInitialized = true;
+      }
+      gameStarted = true;
+    }
+
+    window.addEventListener('keydown', (e) => {
+      const keyLower = e.key.toLowerCase();
+
+      if (!gameStarted && (keyLower === 'enter' || keyLower === ' ' || keyLower === 'space')) {
+        e.preventDefault();
+        startGame();
+        return;
+      }
+
+       if (keyLower === 'r' && gameInitialized) {
+        resetGame();
+      }
+
+      keys[keyLower] = true;
+    });
+    window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+
+    canvas.addEventListener('click', () => {
+      if (!gameStarted) {
+        startGame();
+      }
+    });
+
+    class Entity {
+      constructor(x, y, w, h, type, hitW = w, hitH = h, hitOffsetX = (w - hitW) / 2, hitOffsetY = h - hitH) {
+        this.x = x;          // sprite top-left
+        this.y = y;
+        this.w = w;          // sprite width/height
+        this.h = h;
+        this.hitW = hitW;    // collision box
+        this.hitH = hitH;
+        this.hitOffsetX = hitOffsetX;
+        this.hitOffsetY = hitOffsetY;
+        this.type = type;
+        this.dir = 'down';
+        this.state = 'idle';
+        this.speed = 80;
+        this.timer = 0;
+        this.attackCooldown = 0;
+        this.hp = 100;
+        this.maxHp = 100;
+      }
+      rect() {
+        return {
+          x: this.x + this.hitOffsetX,
+          y: this.y + this.hitOffsetY,
+          w: this.hitW,
+          h: this.hitH,
+        };
+      }
+    }
+
+    class Player extends Entity {
+      constructor(x, y) {
+        const spriteW = Math.round(24 * CHAR_SCALE);
+        const spriteH = Math.round(32 * CHAR_SCALE);
+        const hitW = TILE * 0.8;      // slightly smaller than 1 tile
+        const hitH = TILE * 0.8;      // slightly smaller than 1 tile
+        super(x, y, spriteW, spriteH, 'player', hitW, hitH);
+        this.speed = 120;
+        this.attackTimer = 0;
+        this.emoteTimer = 0;
+        this.animTimer = 0;
+        this.animIndex = 0;
+      }
+      handleInput(dt) {
+        if (this.state === 'death') return;
+        let dx = 0, dy = 0;
+        if (keys['arrowleft'] || keys['a']) dx -= 1;
+        if (keys['arrowright'] || keys['d']) dx += 1;
+        if (keys['arrowup'] || keys['w']) dy -= 1;
+        if (keys['arrowdown'] || keys['s']) dy += 1;
+
+        const len = Math.hypot(dx, dy) || 1;
+        dx = (dx / len) * this.speed * dt;
+        dy = (dy / len) * this.speed * dt;
+
+        if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
+          this.dir = Math.abs(dx) > Math.abs(dy)
+            ? (dx > 0 ? 'right' : 'left')
+            : (dy > 0 ? 'down' : 'up');
+        }
+
+        const attacking = (keys[' '] || keys['space']) && this.attackTimer <= 0;
+        const emoting = keys['e'] && this.emoteTimer <= 0;
+
+        if (attacking) {
+          this.state = 'attack';
+          this.attackTimer = 0.4;
+        } else if (emoting) {
+          this.state = 'emote';
+          this.emoteTimer = 0.8;
+        } else if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
+          this.state = 'walk';
+          moveEntity(this, dx, dy);
+        } else {
+          if (this.state !== 'attack' && this.state !== 'emote') {
+            this.state = 'idle';
+          }
+        }
+      }
+      update(dt) {
+        this.updateAnimation(dt);
+        if (this.attackTimer > 0) {
+          this.attackTimer -= dt;
+          if (this.attackTimer <= 0) this.state = 'idle';
+        }
+        if (this.emoteTimer > 0) {
+          this.emoteTimer -= dt;
+          if (this.emoteTimer <= 0 && this.state === 'emote') this.state = 'idle';
+        }
+      }
+
+      updateAnimation(dt) {
+        const state = this.state === 'death' ? 'death' : this.state;
+        const dir = this.dir || 'down';
+        const frames = (playerSprites[state] && playerSprites[state][dir]) || null;
+        if (!frames) return;
+
+        const frameCount = frames.length;
+        if (frameCount <= 1) return;
+
+        const speed =
+          state === 'walk' ? 0.12 :
+          state === 'attack' ? 0.08 :
+          state === 'emote' ? 0.14 :
+          state === 'death' ? 0.18 :
+          0.2;
+
+        this.animTimer += dt;
+        if (this.animTimer >= speed) {
+          this.animTimer = 0;
+          if (state === 'death') {
+            this.animIndex = Math.min(this.animIndex + 1, frameCount - 1);
+          } else {
+            this.animIndex = (this.animIndex + 1) % frameCount;
+          }
+        }
+      }
+
+      currentFrame() {
+        const state = this.state === 'death' ? 'death' : this.state;
+        const dir = this.dir || 'down';
+        const frames = (playerSprites[state] && playerSprites[state][dir]) || null;
+        if (!frames || frames.length === 0) return null;
+        return frames[Math.min(this.animIndex, frames.length - 1)];
+      }
+    }
+
+    class NPC extends Entity {
+      constructor(x, y, type, variant = {}) {
+        const base = { w: 24, h: 32 };
+        const size = { w: Math.round(base.w * CHAR_SCALE), h: Math.round(base.h * CHAR_SCALE) };
+        const hitW = TILE * 0.8;
+        const hitH = TILE * 0.8;
+        super(x, y, size.w, size.h, type, hitW, hitH);
+        this.variant = variant;
+        this.state = 'idle';
+        this.speed = variant.speed || 60;
+        this.timer = Math.random() * 2;
+        this.attackCooldown = 0;
+        this.hp = variant.hp || 60;
+        this.maxHp = this.hp;
+      }
+      update(dt, player) {
+        this.timer -= dt;
+        if (this.attackCooldown > 0) this.attackCooldown -= dt;
+
+        const dist = distance(this, player);
+        const dirVec = directionVector(this, player);
+
+        if (this.type === 'villager') {
+          this.wander(dt, dirVec, dist);
+        } else if (this.type === 'christian') {
+          this.christianLogic(dt, dirVec, dist);
+        } else if (this.type === 'capitalist') {
+          this.capitalistLogic(dt, dirVec, dist);
+        } else if (this.type === 'monkey') {
+          this.monkeyLogic(dt);
+        }
+      }
+      wander(dt, dirVec, dist) {
+        if (dist < 90 && this.state !== 'walk') {
+          this.state = 'emote';
+        }
+        if (this.timer <= 0) {
+          this.timer = 2 + Math.random() * 3;
+          if (Math.random() < 0.5) {
+            this.state = 'idle';
+          } else {
+            this.state = 'walk';
+            this.dir = pickDirection();
+          }
+        }
+        if (this.state === 'walk') {
+          const speed = this.speed * 0.6;
+          const delta = directionToVector(this.dir, speed * dt);
+          moveEntity(this, delta.x, delta.y);
+        }
+      }
+      christianLogic(dt, dirVec, dist) {
+        const fightsBack = this.variant.fighter;
+        const fleeRadius = 160;
+        if (!fightsBack && dist < fleeRadius) {
+          this.state = 'walk';
+          moveEntity(this, -dirVec.x * this.speed * dt, -dirVec.y * this.speed * dt);
+          this.dir = vectorToFacing({ x: -dirVec.x, y: -dirVec.y });
+          return;
+        }
+        if (fightsBack && dist < 120) {
+          this.state = 'walk';
+          moveEntity(this, dirVec.x * this.speed * dt, dirVec.y * this.speed * dt);
+          this.dir = vectorToFacing(dirVec);
+          if (dist < 52 && this.attackCooldown <= 0) {
+            this.state = 'attack';
+            this.attackCooldown = 1.2;
+          }
+          return;
+        }
+        this.wander(dt, dirVec, dist);
+      }
+      capitalistLogic(dt, dirVec, dist) {
+        const attackRadius = this.variant.ranged ? 210 : 150;
+        if (dist < attackRadius) {
+          this.dir = vectorToFacing(dirVec);
+          if (this.variant.ranged) {
+            this.state = 'idle';
+            if (this.attackCooldown <= 0) {
+              shootProjectile(this, dirVec);
+              this.attackCooldown = 1.0 + Math.random() * 0.5;
+            }
+          } else {
+            this.state = 'walk';
+            moveEntity(this, dirVec.x * (this.speed + 10) * dt, dirVec.y * (this.speed + 10) * dt);
+            if (dist < 50 && this.attackCooldown <= 0) {
+              this.state = 'attack';
+              this.attackCooldown = 1.0;
+            }
+          }
+          return;
+        }
+        this.wander(dt, dirVec, dist);
+      }
+      monkeyLogic(dt) {
+        if (this.timer <= 0) {
+          this.timer = 1 + Math.random() * 2;
+          if (Math.random() < 0.7) {
+            this.state = 'walk';
+            this.dir = pickDirection();
+          } else {
+            this.state = 'idle';
+          }
+        }
+        if (this.state === 'walk') {
+          const delta = directionToVector(this.dir, this.speed * 0.4 * dt);
+          moveEntity(this, delta.x, delta.y);
+        }
+      }
+    }
+
+    function directionToVector(dir, magnitude) {
+      switch (dir) {
+        case 'left': return { x: -magnitude, y: 0 };
+        case 'right': return { x: magnitude, y: 0 };
+        case 'up': return { x: 0, y: -magnitude };
+        case 'down': return { x: 0, y: magnitude };
+        default: return { x: 0, y: 0 };
+      }
+    }
+
+    function vectorToFacing(vec) {
+      if (Math.abs(vec.x) > Math.abs(vec.y)) {
+        return vec.x > 0 ? 'right' : 'left';
+      }
+      return vec.y > 0 ? 'down' : 'up';
+    }
+
+    function pickDirection() {
+      const dirs = ['up', 'down', 'left', 'right'];
+      return dirs[Math.floor(Math.random() * dirs.length)];
+    }
+
+    function moveEntity(ent, dx, dy) {
+      ent.x += dx;
+      if (collides(ent, ent.rect())) ent.x -= dx;
+      ent.y += dy;
+      if (collides(ent, ent.rect())) ent.y -= dy;
+    }
+
+    function collides(self, rect) {
+      // Allow calling as collides(rect) for non-entity checks.
+      if (rect === undefined) {
+        rect = self;
+        self = null;
+      }
+      if (rect.x < 0 || rect.y < 0 || rect.x + rect.w > WORLD_WIDTH * TILE || rect.y + rect.h > WORLD_HEIGHT * TILE) {
+        return true;
+      }
+      if (staticObjects.some(obj => overlaps(rect, objectCollisionRect(obj)))) {
+        return true;
+      }
+
+      // Dynamic collisions: player <> NPCs and NPC <> NPC.
+      if (self !== player && player && overlaps(rect, player.rect())) {
+        return true;
+      }
+      if (Array.isArray(npcs)) {
+        for (const npc of npcs) {
+          if (!npc || npc === self) continue;
+          if (overlaps(rect, npc.rect())) return true;
+        }
+      }
+      return false;
+    }
+
+    function overlaps(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function distance(a, b) {
+      const dx = (a.x + a.w / 2) - (b.x + b.w / 2);
+      const dy = (a.y + a.h / 2) - (b.y + b.h / 2);
+      return Math.hypot(dx, dy);
+    }
+
+    function directionVector(a, b) {
+      const dx = (b.x + b.w / 2) - (a.x + a.w / 2);
+      const dy = (b.y + b.h / 2) - (a.y + a.h / 2);
+      const len = Math.hypot(dx, dy) || 1;
+      return { x: dx / len, y: dy / len };
+    }
+
+    function seedNPCs() {
+      if (!Array.isArray(npcs)) {
+        npcs = [];
+      }
+      npcs.length = 0;
+      npcs.push(new NPC(9 * TILE, 11 * TILE, 'villager', { speed: 55 }));
+      npcs.push(new NPC(7 * TILE, 5 * TILE, 'villager', { speed: 60 }));
+      npcs.push(new NPC(23 * TILE, 4 * TILE, 'villager', { speed: 60 }));
+
+      npcs.push(new NPC(6 * TILE, 13 * TILE, 'christian', { fighter: false, speed: 70 }));
+      npcs.push(new NPC(15 * TILE, 9 * TILE, 'christian', { fighter: true, speed: 75 }));
+
+      npcs.push(new NPC(22 * TILE, 8 * TILE, 'capitalist', { ranged: true, speed: 50, hp: 80 }));
+      npcs.push(new NPC(20 * TILE, 13 * TILE, 'capitalist', { ranged: false, speed: 70, hp: 90 }));
+
+      npcs.push(new NPC(11 * TILE, 8 * TILE, 'monkey', { speed: 70, hp: 30 }));
+      npcs.push(new NPC(4 * TILE, 12 * TILE, 'monkey', { speed: 70, hp: 30 }));
+    }
+    seedNPCs();
+
+    function shootProjectile(shooter, dirVec) {
+      const origin = { x: shooter.x + shooter.w / 2, y: shooter.y + shooter.h / 2 };
+      projectiles.push({
+        x: origin.x,
+        y: origin.y,
+        r: 4,
+        vx: dirVec.x * 180,
+        vy: dirVec.y * 180,
+        life: 2,
+        from: shooter.type,
+      });
+    }
+
+    function updateProjectiles(dt) {
+      for (let i = projectiles.length - 1; i >= 0; i--) {
+        const p = projectiles[i];
+        p.life -= dt;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+
+        if (p.life <= 0) {
+          projectiles.splice(i, 1);
+          continue;
+        }
+
+        if (collides({ x: p.x - p.r, y: p.y - p.r, w: p.r * 2, h: p.r * 2 })) {
+          projectiles.splice(i, 1);
+          continue;
+        }
+
+        if (p.from !== 'player') {
+          if (overlaps({ x: p.x - p.r, y: p.y - p.r, w: p.r * 2, h: p.r * 2 }, player.rect())) {
+            damagePlayer(8);
+            projectiles.splice(i, 1);
+          }
+        }
+      }
+    }
+
+    function damagePlayer(amount) {
+      if (!player) return;
+      if (player.state === 'death') return;
+      player.hp = Math.max(0, player.hp - amount);
+      if (player.hp <= 0) {
+        player.state = 'death';
+      }
+      hpFill.style.width = `${(player.hp / player.maxHp) * 100}%`;
+    }
+
+    function updateCamera() {
+      camera.w = canvas.width / ZOOM;
+      camera.h = canvas.height / ZOOM;
+      if (player) {
+        camera.x = player.x + player.w / 2 - camera.w / 2;
+        camera.y = player.y + player.h / 2 - camera.h / 2;
+      }
+      camera.x = Math.max(0, Math.min(camera.x, WORLD_WIDTH * TILE - camera.w));
+      camera.y = Math.max(0, Math.min(camera.y, WORLD_HEIGHT * TILE - camera.h));
+    }
+
+    function resetGame() {
+      if (!player) return;
+      player.x = 15 * TILE;
+      player.y = 6 * TILE;
+      player.hp = player.maxHp;
+      player.state = 'idle';
+      player.attackTimer = 0;
+      player.emoteTimer = 0;
+      hpFill.style.width = '100%';
+      projectiles.length = 0;
+      seedNPCs();
+    }
+
+    // Build the world up front so the start screen shows the environment.
+    initGameWorld();
+    gameInitialized = true;
+
+    let last = performance.now();
+    function loop(now) {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      update(dt);
+      draw();
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    function update(dt) {
+      if (!gameInitialized) {
+        // Start screen only: keep camera static.
+        return;
+      }
+
+      if (!gameStarted) {
+        // Allow idle animation but no movement or AI.
+        player.update(dt);
+        updateCamera();
+        return;
+      }
+
+      player.handleInput(dt);
+      player.update(dt);
+      npcs.forEach(npc => npc.update(dt, player));
+      updateProjectiles(dt);
+      updateCamera();
+    }
+
+    function draw() {
+      // Start screen draws in screen space without world.
+      if (!gameInitialized) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawStartScreen();
+        return;
+      }
+
+      ctx.save();
+      ctx.scale(ZOOM, ZOOM);
+      ctx.fillStyle = colors.sandDeep;
+      ctx.fillRect(0, 0, canvas.width / ZOOM, canvas.height / ZOOM);
+
+      drawTiles();
+      drawObjects();
+      drawProjectiles();
+      ctx.restore();
+      if (!gameStarted) {
+        drawStartScreen();
+      }
+    }
+
+    function drawTiles() {
+      const startX = Math.floor(camera.x / TILE);
+      const startY = Math.floor(camera.y / TILE);
+      const endX = Math.ceil((camera.x + camera.w) / TILE);
+      const endY = Math.ceil((camera.y + camera.h) / TILE);
+      for (let y = startY; y < endY; y++) {
+        for (let x = startX; x < endX; x++) {
+          if (y < 0 || x < 0 || y >= WORLD_HEIGHT || x >= WORLD_WIDTH) continue;
+          const tile = mapLayout[y][x];
+          const screenX = Math.floor(x * TILE - camera.x);
+          const screenY = Math.floor(y * TILE - camera.y);
+
+          // Base ground texture
+          const baseTex = tile === 0 ? tileTextures.sand : tileTextures.grass;
+          if (baseTex && baseTex.complete) {
+            ctx.drawImage(baseTex, screenX, screenY, TILE, TILE);
+          } else {
+            ctx.fillStyle = tile === 0 ? colors.sand : colors.grass;
+            ctx.fillRect(screenX, screenY, TILE, TILE);
+          }
+
+          // Grass edges and corners where it meets sand.
+          if (tile === 1) {
+            const up = y > 0 ? mapLayout[y - 1][x] : 1;
+            const down = y < WORLD_HEIGHT - 1 ? mapLayout[y + 1][x] : 1;
+            const left = x > 0 ? mapLayout[y][x - 1] : 1;
+            const right = x < WORLD_WIDTH - 1 ? mapLayout[y][x + 1] : 1;
+
+            const edge = (tileTextures && tileTextures.edge) || {};
+            const corner = (tileTextures && tileTextures.corner) || {};
+            const tri = (tileTextures && tileTextures.tri) || {};
+
+            // Edges
+            if (up === 0 && edge.up && edge.up.complete) {
+              ctx.drawImage(edge.up, screenX, screenY, TILE, TILE);
+            }
+            if (down === 0 && edge.down && edge.down.complete) {
+              ctx.drawImage(edge.down, screenX, screenY, TILE, TILE);
+            }
+            if (left === 0 && edge.left && edge.left.complete) {
+              ctx.drawImage(edge.left, screenX, screenY, TILE, TILE);
+            }
+            if (right === 0 && edge.right && edge.right.complete) {
+              ctx.drawImage(edge.right, screenX, screenY, TILE, TILE);
+            }
+
+            // Diagonal sand for rounded corners / tips
+            const upLeftSand = y > 0 && x > 0 && mapLayout[y - 1][x - 1] === 0;
+            const upRightSand = y > 0 && x < WORLD_WIDTH - 1 && mapLayout[y - 1][x + 1] === 0;
+            const downLeftSand = y < WORLD_HEIGHT - 1 && x > 0 && mapLayout[y + 1][x - 1] === 0;
+            const downRightSand = y < WORLD_HEIGHT - 1 && x < WORLD_WIDTH - 1 && mapLayout[y + 1][x + 1] === 0;
+
+            if (corner.upLeft && corner.upLeft.complete && upLeftSand && up === 1 && left === 1) {
+              ctx.drawImage(corner.upLeft, screenX, screenY, TILE, TILE);
+            }
+            if (corner.upRight && corner.upRight.complete && upRightSand && up === 1 && right === 1) {
+              ctx.drawImage(corner.upRight, screenX, screenY, TILE, TILE);
+            }
+            if (corner.downRight && corner.downRight.complete && downRightSand && down === 1 && right === 1) {
+              ctx.drawImage(corner.downRight, screenX, screenY, TILE, TILE);
+            }
+            if (corner.downLeft && corner.downLeft.complete && downLeftSand && down === 1 && left === 1) {
+              ctx.drawImage(corner.downLeft, screenX, screenY, TILE, TILE);
+            }
+
+            // Narrow grass tips where sand surrounds a single side.
+            if (tri.up && tri.up.complete && up === 0 && down === 1 && left === 0 && right === 0) {
+              ctx.drawImage(tri.up, screenX, screenY, TILE, TILE);
+            }
+            if (tri.down && tri.down.complete && down === 0 && up === 1 && left === 0 && right === 0) {
+              ctx.drawImage(tri.down, screenX, screenY, TILE, TILE);
+            }
+            if (tri.left && tri.left.complete && left === 0 && right === 1 && up === 0 && down === 0) {
+              ctx.drawImage(tri.left, screenX, screenY, TILE, TILE);
+            }
+            if (tri.right && tri.right.complete && right === 0 && left === 1 && up === 0 && down === 0) {
+              ctx.drawImage(tri.right, screenX, screenY, TILE, TILE);
+            }
+          }
+        }
+      }
+    }
+
+    function objectCollisionRect(obj) {
+      const tilesW = obj.collW || Math.max(1, Math.round((obj.w || TILE) / TILE));
+      const tilesH = obj.collH || 1;
+      const w = tilesW * TILE;
+      const h = tilesH * TILE;
+      const baseX = obj.x + obj.w / 2;
+      const baseY = obj.y + obj.h;
+      return {
+        x: baseX - w / 2,
+        y: baseY - h,
+        w,
+        h,
+      };
+    }
+
+    function drawObjectSprite(obj) {
+      const screenX = obj.x - camera.x;
+      const screenY = obj.y - camera.y;
+
+      let tex = null;
+      if (obj.name === 'fale') tex = objectTextures.fale;
+      if (obj.name === 'moai') tex = objectTextures.moai;
+
+      const sprite = (obj.type === 'tree') ? (objectTextures && objectTextures.palm) : tex;
+      if (sprite && sprite.complete) {
+        const imgW = sprite.naturalWidth || sprite.width;
+        const imgH = sprite.naturalHeight || sprite.height;
+        if (imgW > 0 && imgH > 0) {
+          let scale = Math.min(obj.w / imgW, obj.h / imgH);
+          // Enlarge palm trees and Moai visually while keeping collisions the same.
+          if (obj.type === 'tree' || obj.name === 'moai') {
+            scale *= 2;
+          }
+          const drawW = imgW * scale;
+          const drawH = imgH * scale;
+          const drawX = screenX + (obj.w - drawW) / 2;
+          const drawY = screenY + (obj.h - drawH);
+          ctx.drawImage(sprite, drawX, drawY, drawW, drawH);
+          return;
+        }
+      }
+
+      // Fallback placeholder
+      ctx.fillStyle = obj.color;
+      ctx.fillRect(screenX, screenY, obj.w, obj.h);
+      ctx.fillStyle = obj.accent;
+      ctx.fillRect(screenX, screenY, obj.w, obj.h * 0.2);
+    }
+
+    function drawObjects() {
+      const items = [];
+      staticObjects.forEach(obj => {
+        const coll = objectCollisionRect(obj);
+        items.push({ kind: 'object', ref: obj, baseY: coll.y + coll.h });
+      });
+      npcs.forEach(npc => {
+        const r = npc.rect();
+        items.push({ kind: 'npc', ref: npc, baseY: r.y + r.h });
+      });
+      if (player) {
+        const r = player.rect();
+        items.push({ kind: 'player', ref: player, baseY: r.y + r.h });
+      }
+
+      items.sort((a, b) => a.baseY - b.baseY);
+
+      items.forEach(entry => {
+        if (entry.kind === 'object') {
+          drawObjectSprite(entry.ref);
+        } else {
+          drawCharacter(entry.ref, entry.kind === 'player');
+        }
+      });
+    }
+
+    function drawCharacter(char, isPlayer = false) {
+      const x = char.x - camera.x;
+      const y = char.y - camera.y;
+      const palette = {
+        player: { idle: '#4f8fd7', walk: '#6ab1ff', attack: '#e05b5b', emote: '#ffd447', death: '#222' },
+        villager: { idle: '#d7b272', walk: '#dcbc84', attack: '#d7b272', emote: '#ffe7a0', death: '#444' },
+        christian: { idle: '#4c4c4c', walk: '#5d5d5d', attack: '#f3d35c', emote: '#f3d35c', death: '#222' },
+        capitalist: { idle: '#1f2b3a', walk: '#26374b', attack: '#f06060', emote: '#6ba1ff', death: '#111' },
+        monkey: { idle: '#7a5a39', walk: '#8a6b49', attack: '#8a6b49', emote: '#c28c4a', death: '#3a2a19' },
+      };
+      const style = (palette[char.type] || palette.villager)[char.state] || palette.villager.idle;
+
+      ctx.fillStyle = 'rgba(0,0,0,0.25)';
+      ctx.beginPath();
+      ctx.ellipse(x + char.w / 2, y + char.h, char.w * 0.6, char.h * 0.25, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (isPlayer) {
+        const img = char.currentFrame && char.currentFrame();
+        if (img && img.complete) {
+          const drawX = Math.floor(x);
+          const r = char.rect();
+          const drawY = Math.floor((r.y + r.h) - char.h - camera.y);
+          ctx.drawImage(img, drawX, drawY, char.w, char.h);
+        } else {
+          ctx.fillStyle = style;
+          ctx.fillRect(Math.floor(x), Math.floor(y), char.w, char.h);
+        }
+      } else {
+        let wobble = 0;
+        if (char.state === 'walk') {
+          wobble = Math.sin(performance.now() / 100) * 1.5;
+        }
+        ctx.fillStyle = style;
+        ctx.fillRect(Math.floor(x), Math.floor(y + wobble), char.w, char.h);
+      }
+
+      if (!isPlayer) {
+        ctx.fillStyle = '#111';
+        const eyeY = y + 6;
+        if (char.dir === 'left') {
+          ctx.fillRect(x + 4, eyeY, 3, 3);
+        } else if (char.dir === 'right') {
+          ctx.fillRect(x + char.w - 7, eyeY, 3, 3);
+        } else {
+          ctx.fillRect(x + 5, eyeY, 3, 3);
+          ctx.fillRect(x + char.w - 8, eyeY, 3, 3);
+        }
+      }
+
+      if (char.state === 'attack' && !isPlayer) {
+        ctx.strokeStyle = '#ffe7a0';
+        ctx.lineWidth = 2;
+        const reach = 10;
+        let ax = x + char.w / 2;
+        let ay = y + char.h / 2;
+        if (char.dir === 'left') ax -= reach;
+        if (char.dir === 'right') ax += reach;
+        if (char.dir === 'up') ay -= reach;
+        if (char.dir === 'down') ay += reach;
+        ctx.beginPath();
+        ctx.arc(ax, ay, 8, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      if (char.state === 'emote' && !isPlayer) {
+        ctx.fillStyle = '#fff07c';
+        ctx.beginPath();
+        ctx.arc(x + char.w / 2, y - 6, 6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (isPlayer) {
+        const r = char.rect();
+        const rx = r.x - camera.x;
+        const ry = r.y - camera.y;
+        ctx.strokeStyle = '#ffffffaa';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(Math.floor(rx), Math.floor(ry), r.w, r.h);
+      }
+    }
+
+    function drawProjectiles() {
+      ctx.fillStyle = '#ff9b6b';
+      projectiles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x - camera.x, p.y - camera.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    function drawStartScreen() {
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.save();
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ff0000';
+      ctx.font = 'bold 32px "Oswald", system-ui';
+      ctx.fillText('CHRISTIANS AND CANNIBALS', w / 2, h / 2 - 70);
+
+      ctx.font = 'bold 20px "VT323", monospace';
+      ctx.fillText('-- THE GAME --', w / 2, h / 2 - 40);
+
+      ctx.fillStyle = '#f5e9d0';
+      ctx.font = '18px "VT323", monospace';
+      ctx.fillText('BEGIN YOUR JOURNEY', w / 2, h / 2 + 5);
+      ctx.fillText('PRESS ENTER, SPACE, OR CLICK', w / 2, h / 2 + 35);
+
+      const scoreText = String(highScore).padStart(6, '0');
+      ctx.fillText(`HIGH SCORE  ${scoreText}`, w / 2, h / 2 + 75);
+
+      ctx.restore();
+    }
+  </script>
+</body>
+</html>

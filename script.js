@@ -13,14 +13,22 @@ document.querySelectorAll('a').forEach(anchor => {
         if (href.startsWith('#')) {
             e.preventDefault();
 
-            // Visual glitch effect before moving
-            document.body.style.filter = "invert(1) contrast(2)";
-            setTimeout(() => {
-                document.body.style.filter = "none";
+            // Red flash effect using #transition-overlay
+            const overlay = document.getElementById('transition-overlay');
+            if (overlay) {
+                overlay.style.opacity = '1';
+                setTimeout(() => {
+                    overlay.style.opacity = '0';
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }, 150); // Short delay for the flash
+            } else {
+                // Fallback if overlay missing
                 document.querySelector(href).scrollIntoView({
                     behavior: 'smooth'
                 });
-            }, 100 + Math.random() * 200); // Random delay
+            }
         }
     });
 });
@@ -1068,4 +1076,69 @@ const galleryLightbox = (() => {
 
     renderTrackList();
     setPlayingState(false);
+})();
+
+// Game menu / fullscreen toggle --------------------------------------------
+(function initGameMenu() {
+    const shell = document.getElementById('game-shell');
+    const toggle = document.getElementById('game-toggle');
+    if (!shell || !toggle) {
+        return;
+    }
+
+    let isFullscreen = false;
+    let hasGameFocus = false;
+
+    const applyState = () => {
+        shell.classList.toggle('game-shell--fullscreen', isFullscreen);
+        toggle.textContent = isFullscreen ? 'BACK TO SITE' : 'PLAY NOW';
+        document.body.classList.toggle('is-game-fullscreen', isFullscreen);
+
+        // Lock/unlock scroll at the document level.
+        if (isFullscreen) {
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+        }
+    };
+
+    toggle.addEventListener('click', () => {
+        isFullscreen = !isFullscreen;
+        applyState();
+    });
+
+    // Track when the user is actively interacting with the game frame.
+    shell.addEventListener('pointerdown', (event) => {
+        if (shell.contains(event.target)) {
+            hasGameFocus = true;
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!shell.contains(event.target) && !isFullscreen) {
+            hasGameFocus = false;
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && isFullscreen) {
+            isFullscreen = false;
+            applyState();
+            return;
+        }
+
+        const usingGameKeys = isFullscreen || hasGameFocus;
+        if (!usingGameKeys) {
+            return;
+        }
+
+        const blockedKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Spacebar', 'PageUp', 'PageDown'];
+        if (blockedKeys.includes(event.key)) {
+            event.preventDefault();
+        }
+    });
+
+    applyState();
 })();
