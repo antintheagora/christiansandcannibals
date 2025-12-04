@@ -650,6 +650,7 @@ const galleryLightbox = (() => {
     const discElement = document.querySelector('.spinning-disc');
     const downloadToggle = document.querySelector('.download-toggle');
     const downloadPanel = document.getElementById('download-panel');
+    const downloadButton = document.querySelector('.download-button[data-download-files]');
 
     if (!audioEl || !trackListEl || !playBtn || !prevBtn || !nextBtn || !seekEl || !currentTrackEl || !discArtEl || !volumeEl) {
         return;
@@ -963,6 +964,42 @@ const galleryLightbox = (() => {
         discElement.addEventListener('pointerenter', handlePointerEnter);
         discElement.addEventListener('pointermove', handlePointerMove);
         discElement.addEventListener('pointerleave', handlePointerLeave);
+    }
+
+    if (downloadButton) {
+        const fileList = downloadButton.dataset.downloadFiles?.split('|').map(path => path.trim()).filter(Boolean);
+
+        const encodePath = (path) => encodeURI(path)
+            .replace(/#/g, '%23')
+            .replace(/\?/g, '%3F')
+            .replace(/\[/g, '%5B')
+            .replace(/\]/g, '%5D');
+
+        const triggerDownload = (url) => {
+            const tempLink = document.createElement('a');
+            tempLink.href = encodePath(url);
+            tempLink.setAttribute('download', '');
+            tempLink.rel = 'noopener';
+            document.body.appendChild(tempLink);
+            tempLink.click();
+            tempLink.remove();
+        };
+
+        if (fileList?.length) {
+            downloadButton.addEventListener('click', (event) => {
+                // Allow modifier clicks to open in new tab/default behavior
+                if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+                    return;
+                }
+
+                event.preventDefault();
+                fileList.forEach((filePath, index) => {
+                    window.setTimeout(() => {
+                        triggerDownload(filePath);
+                    }, index * 300);
+                });
+            });
+        }
     }
 
     if (downloadToggle && downloadPanel) {
