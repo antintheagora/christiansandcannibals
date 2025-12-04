@@ -666,44 +666,53 @@ const galleryLightbox = (() => {
             art: 'Resources/Music/Album Art/CD1.png',
             basePath: 'Resources/Music/Eyez On The Prize/Eyez On The Prize [Disc 1]/',
             tracks: [
-                { title: '01 Dog Eat Dog World (Intro)', file: '01 Dog Eat Dog World (Intro).mp3' },
-                { title: "02 Have 'em Hatin", file: "02 Have 'em Hatin.mp3" },
-                { title: '03 Eyez On The Prize', file: '03 Eyez On The Prize.mp3' },
-                { title: '04 You And Your 9mm', file: '04 You And Your 9mm.mp3' },
-                { title: '05 Night Shift', file: '05 Night Shift.mp3' },
-                { title: '06 Game Trump Tight', file: '06 Game Trump Tight.mp3' },
-                { title: '07 Interlude', file: '07 Interlude.mp3' },
-                { title: '08 Follow Me', file: '08 Follow Me.mp3' },
-                { title: '09 Savage Gentlemen', file: '09 Savage Gentlemen.mp3' },
-                { title: '10 All My Niggaz', file: '10 All My Niggaz.mp3' },
-                { title: "11 Sexy Lil' Neighbor", file: "11 Sexy Lil' Neighbor.mp3" },
-                { title: '12 My Blocks', file: '12 My Blocks.mp3' },
-                { title: '13 Gotta Get My Paper Right', file: '13 Gotta Get My Paper Right.mp3' },
-                { title: "14 Can't Go Against The Grain (Outro)", file: "14 Can't Go Against The Grain (Outro).mp3" }
+                { title: `01. "DOG EAT DOG WORLD" (INTRO)`, artist: 'MOVIE CLIP/SCENE', file: '01 Dog Eat Dog World (Intro).mp3' },
+                { title: `02. "HAVE'EM HATIN"`, artist: 'MAC DRE, YOUNG NADE', file: "02 Have 'em Hatin.mp3" },
+                { title: `03. "EYEZ ON THE PRIZE"`, artist: 'PETER GUNZ & LORD TARIQ, KUTFATHER', file: '03 Eyez On The Prize.mp3' },
+                { title: `04. "YOU AND YOUR 9MM"`, artist: 'DOWN-N-DIRTY CLICK (DIRTY SOUTH)', file: '04 You And Your 9mm.mp3' },
+                { title: `05. "NIGHT SHIFT"`, artist: 'SAMOENDS FEAT. RICHIE RICH', file: '05 Night Shift.mp3' },
+                { title: `06. "GAME TRUMP TIGHT"`, artist: 'SNOOP DOGG, JT THE BIGGA FIGGA, KUTFATHER', file: '06 Game Trump Tight.mp3' },
+                { title: `07. "INTERLUDE"`, artist: 'SLIM THE PALE PIMP, SKRILLA MOBB', file: '07 Interlude.mp3' },
+                { title: `08. "FOLLOW ME"`, artist: 'BLACK RHINO, SKRILLA MOBB, FLASH', file: '08 Follow Me.mp3' },
+                { title: `09. "ALL DAY"`, artist: 'SAVAGE GENTLEMEN', file: '09 Savage Gentlemen.mp3' },
+                { title: `10. "ALL MY NIGGAZ"`, artist: '2WICE, YUKMOUTH, KNUMBSKULL (LUNIZ), VAS BOSSY', file: '10 All My Niggaz.mp3' },
+                { title: `11. "SEXY LIL' NEIGHBOR"`, artist: 'DRE DOG AKA ANDRE NICKATINA', file: "11 Sexy Lil' Neighbor.mp3" },
+                { title: `12. "MY BLOCKS"`, artist: 'L.C., DOWN-N-DIRTY HUSTLERS', file: '12 My Blocks.mp3' },
+                { title: `13. "GOTTA GET MY PAPER RIGHT (OUT OF 10 NIGGAZ AIN'T REAL!)"`, artist: 'COOLIO DA UNDADOGG, USUAL SUSPECTS, BABY BEESH (LATINO VELVET)', file: '13 Gotta Get My Paper Right.mp3' },
+                { title: `14. "CAN'T GO AGAINST THE GRAIN"`, artist: 'MOVIE CLIP (OUTRO)', file: "14 Can't Go Against The Grain (Outro).mp3" }
             ]
         },
         2: {
             art: 'Resources/Music/Album Art/CD2.png',
             basePath: 'Resources/Music/Eyez On The Prize/Eyez On The Prize [Disc 2]/',
             tracks: [
-                { title: '01 Dead End (Spoken Word)', file: '01 Dead End (Spoken Word).mp3' },
-                { title: '02 Paper Riderz', file: '02 Paper Riderz.mp3' },
-                { title: "03 Obey Yo' P.O", file: "03 Obey Yo' P.O.mp3" },
-                { title: "04 Lace 'Em Up", file: "04 Lace 'Em Up.mp3" },
-                { title: '05 Pimp$ & Playa$', file: "05 Pimp$ & Playa$.mp3" },
-                { title: '06 It Takes Dirt To Make Flowers Grow', file: '06 It Takes Dirt To Make Flowers Grow.mp3' },
-                { title: "07 It's The Mob", file: "07 It's The Mob.mp3" },
-                { title: "08 You Can't Loose", file: "08 You Can't Loose.mp3" },
-                { title: '09 Dreams Of Being Rich', file: '09 Dreams Of Being Rich.mp3' },
-                { title: "10 Slippin'", file: "10 Slippin'.mp3" },
-                { title: "11 Eastside 'G' Riderz", file: "11 Eastside 'G' Riderz.mp3" },
-                { title: "12 Ain't Nothin' Changed", file: "12 Ain't Nothin' Changed.mp3" },
-                { title: '13 My Destiny', file: '13 My Destiny.mp3' },
-                { title: '14 In The Air Tonight Intro', file: '14 In The Air Tonight Intro.mp3' },
-                { title: '15 In The Air Tonight', file: '15 In The Air Tonight.mp3' },
-                { title: '16 Outro', file: '16 Outro.mp3' }
+                { title: `01. "DEAD END" (SPOKEN WORD)`, artist: 'IPO', file: '01 Dead End (Spoken Word).mp3' },
+                { title: `02. "PAPER RIDERZ"`, artist: 'SAMOAENDZ ENT.', file: '02 Paper Riderz.mp3' },
+                { title: `03. "OBEY YO' P.O."`, artist: 'E-40, 2WICE, QURAN', file: "03 Obey Yo' P.O.mp3" },
+                { title: `04. "LACE 'EM UP"`, artist: 'BIG MACK, MAINE-O (11/5), FAMILY TYZ', file: "04 Lace 'Em Up.mp3" },
+                { title: `05. "PIMP$ & PLAYA$"`, artist: 'SAN QUINN, G-BOOGIE, & DAVEROSKI', file: "05 Pimp$ & Playa$.mp3" },
+                { title: `06. "IT TAKES DIRT TO MAKE FLOWERS GROW"`, artist: 'MOVIE CLIP/SCENE', file: '06 It Takes Dirt To Make Flowers Grow.mp3' },
+                { title: `07. "IT'S THE MOB"`, artist: 'DUBEE AKA SUGAWOLF, M.O.H.', file: "07 It's The Mob.mp3" },
+                { title: `08. "YOU CAN'T LOSE"`, artist: 'B-BOY POSSE, KILOMAI, J-MACK', file: "08 You Can't Loose.mp3" },
+                { title: `09. "DREAMS OF BEING RICH"`, artist: 'BIG ROB', file: '09 Dreams Of Being Rich.mp3' },
+                { title: `10. "SLIPPIN'"`, artist: 'RUSHE', file: "10 Slippin'.mp3" },
+                { title: `11. "EASTSIDE 'G' RIDERZ"`, artist: 'BROWN-N-PROUD, BABY BEESH (LATINO VELVET)', file: "11 Eastside 'G' Riderz.mp3" },
+                { title: `12. "AIN'T NOTHIN' CHANGED"`, artist: 'CALICO, YOUNG AL, PISTAL ("USUAL SUSPECTS")', file: "12 Ain't Nothin' Changed.mp3" },
+                { title: `13. "MY DESTINY"`, artist: 'USUAL SUSPECTS', file: '13 My Destiny.mp3' },
+                { title: `14. "INTRO TO THE FUGITIVE"`, artist: '', file: '14 In The Air Tonight Intro.mp3' },
+                { title: `15. "THE FUGITIVE"`, artist: 'COUGNUT, GUCE, U.D.I.', file: '15 In The Air Tonight.mp3' },
+                { title: `16. "OUTRO"`, artist: '', file: '16 Outro.mp3' }
             ]
         }
+    };
+
+    const formatTrackLabel = (track) => {
+        if (!track) {
+            return '';
+        }
+        const titleSpan = `<span class="track-label__title">${track.title}</span>`;
+        const artistSpan = track.artist ? ` <span class="track-label__dash">—</span> <span class="track-label__artist">${track.artist}</span>` : '';
+        return `${titleSpan}${artistSpan}`;
     };
 
     const DEFAULT_START_TRACK_INDEX = 1;
@@ -723,7 +732,7 @@ const galleryLightbox = (() => {
         trackListEl.innerHTML = '';
         disc.tracks.forEach((track, index) => {
             const li = document.createElement('li');
-            li.textContent = track.title;
+            li.innerHTML = formatTrackLabel(track);
             li.dataset.trackIndex = String(index);
             if (index === currentTrackIndex) {
                 li.classList.add('is-active');
@@ -773,7 +782,7 @@ const galleryLightbox = (() => {
         audioEl.play().catch(() => { });
         setPlayingState(true);
         updateActiveListItem();
-        currentTrackEl.textContent = track.title;
+        currentTrackEl.innerHTML = formatTrackLabel(track);
     };
 
     const updateActiveListItem = () => {
@@ -1082,50 +1091,49 @@ const galleryLightbox = (() => {
 (function initGameMenu() {
     const shell = document.getElementById('game-shell');
     const toggle = document.getElementById('game-toggle');
+    const frame = document.getElementById('game-frame');
     if (!shell || !toggle) {
         return;
     }
 
     let isFullscreen = false;
     let hasGameFocus = false;
+    const blockedKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Spacebar', 'PageUp', 'PageDown'];
 
-    const applyState = () => {
-        shell.classList.toggle('game-shell--fullscreen', isFullscreen);
-        toggle.textContent = isFullscreen ? 'BACK TO SITE' : 'PLAY NOW';
-        document.body.classList.toggle('is-game-fullscreen', isFullscreen);
+    const updateScrollLock = () => {
+        const lock = isFullscreen || hasGameFocus;
+        document.documentElement.style.overflow = lock ? 'hidden' : '';
+        document.body.style.overflow = lock ? 'hidden' : '';
+    };
 
-        // Lock/unlock scroll at the document level.
-        if (isFullscreen) {
-            document.documentElement.style.overflow = 'hidden';
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.documentElement.style.overflow = '';
-            document.body.style.overflow = '';
+    const exitFullscreen = () => {
+        if (!isFullscreen) {
+            return;
+        }
+        isFullscreen = false;
+        hasGameFocus = false;
+        applyState();
+    };
+
+    const preventDirectionalScroll = (event) => {
+        if (blockedKeys.includes(event.key)) {
+            event.preventDefault();
         }
     };
 
-    toggle.addEventListener('click', () => {
-        isFullscreen = !isFullscreen;
-        applyState();
-    });
-
-    // Track when the user is actively interacting with the game frame.
-    shell.addEventListener('pointerdown', (event) => {
-        if (shell.contains(event.target)) {
-            hasGameFocus = true;
+    const preventScrollGesture = (event) => {
+        if (isFullscreen || hasGameFocus) {
+            event.preventDefault();
         }
-    });
+    };
 
-    document.addEventListener('click', (event) => {
-        if (!shell.contains(event.target) && !isFullscreen) {
-            hasGameFocus = false;
-        }
-    });
+    const onGameKeyDown = (event) => {
+        const isEscape = event.key === 'Escape';
 
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && isFullscreen) {
-            isFullscreen = false;
-            applyState();
+        if (isEscape && isFullscreen) {
+            exitFullscreen();
+            event.preventDefault();
+            event.stopPropagation();
             return;
         }
 
@@ -1134,11 +1142,106 @@ const galleryLightbox = (() => {
             return;
         }
 
-        const blockedKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'Spacebar', 'PageUp', 'PageDown'];
-        if (blockedKeys.includes(event.key)) {
-            event.preventDefault();
+        preventDirectionalScroll(event);
+    };
+
+    const focusGame = () => {
+        if (!frame) {
+            return;
+        }
+
+        hasGameFocus = true;
+        updateScrollLock();
+
+        try {
+            frame.focus();
+            if (frame.contentWindow && typeof frame.contentWindow.focus === 'function') {
+                frame.contentWindow.focus();
+            }
+        } catch (error) {
+            console.warn('Unable to programmatically focus game frame', error);
+        }
+    };
+
+    const applyState = () => {
+        shell.classList.toggle('game-shell--fullscreen', isFullscreen);
+        toggle.textContent = isFullscreen ? 'BACK TO SITE' : 'FULL SCREEN MODE';
+        document.body.classList.toggle('is-game-fullscreen', isFullscreen);
+        updateScrollLock();
+    };
+
+    toggle.addEventListener('click', () => {
+        isFullscreen = !isFullscreen;
+        applyState();
+
+        if (isFullscreen) {
+            focusGame();
+        } else {
+            hasGameFocus = false;
+            updateScrollLock();
         }
     });
+
+    // Track when the user is actively interacting with the game frame.
+    shell.addEventListener('pointerdown', (event) => {
+        if (shell.contains(event.target)) {
+            hasGameFocus = true;
+            updateScrollLock();
+        }
+    });
+
+    shell.addEventListener('wheel', preventScrollGesture, { passive: false });
+    shell.addEventListener('touchmove', preventScrollGesture, { passive: false });
+
+    document.addEventListener('click', (event) => {
+        if (!shell.contains(event.target) && !isFullscreen) {
+            hasGameFocus = false;
+            updateScrollLock();
+        }
+    });
+
+    document.addEventListener('keydown', onGameKeyDown, { capture: true });
+
+    window.addEventListener('message', (event) => {
+        const data = event.data;
+        if (data && data.type === 'EXIT_GAME_FULLSCREEN') {
+            exitFullscreen();
+        }
+    });
+
+    if (frame) {
+        frame.addEventListener('focus', () => {
+            hasGameFocus = true;
+            updateScrollLock();
+        });
+
+        frame.addEventListener('blur', () => {
+            if (!isFullscreen) {
+                hasGameFocus = false;
+                updateScrollLock();
+            }
+        });
+
+        const bindIframeKeyGuards = () => {
+            try {
+                const contentWindow = frame.contentWindow;
+                const contentDocument = frame.contentDocument || contentWindow?.document;
+
+                if (contentWindow) {
+                    contentWindow.addEventListener('keydown', onGameKeyDown, { capture: true });
+                }
+
+                if (contentDocument) {
+                    contentDocument.addEventListener('keydown', onGameKeyDown, { capture: true });
+                }
+            } catch (error) {
+                console.warn('Unable to bind game key guards', error);
+            }
+        };
+
+        bindIframeKeyGuards();
+        frame.addEventListener('load', bindIframeKeyGuards);
+    }
 
     applyState();
 })();

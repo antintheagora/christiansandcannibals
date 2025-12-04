@@ -14,11 +14,15 @@
       --ink: #0b0b0d;
       --blood: #e54444;
       --blood-deep: #b01d1d;
-      --panel: rgba(10, 10, 12, 0.82);
-      --panel-border: rgba(229, 68, 68, 0.5);
-      --text: #f7d7d7;
+      --panel: rgba(0, 0, 0, 0.72);
+      --panel-border: rgba(229, 68, 68, 0.8);
+      --text: #ff4d4d;
     }
     * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
     body {
       margin: 0;
       background: radial-gradient(circle at 20% 20%, rgba(229, 68, 68, 0.07), transparent 28%), #0a0a0c;
@@ -26,7 +30,11 @@
       font-family: "Courier New", monospace;
       overflow: hidden;
     }
-    canvas { display: block; }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
     #ui {
       position: absolute;
       inset: 0;
@@ -40,19 +48,24 @@
     }
     .panel {
       background: var(--panel);
-      background-image: url('Assets/Textures/gs_boxed.png');
-      background-size: 64px 64px;
-      background-repeat: repeat;
       padding: 8px 10px;
       border: 1px solid var(--panel-border);
       border-radius: 6px;
       max-width: 360px;
-      box-shadow: none;
+      box-shadow: 0 0 10px rgba(229, 68, 68, 0.35);
+      color: var(--text);
     }
-    .hud {
+.hud {
       display: flex;
-      gap: 10px;
-      align-items: center;
+      flex-direction: column;
+      gap: 0.35rem;
+      align-items: stretch;
+      min-width: 210px;
+    }
+    .hud__top {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
     }
     .bar {
       width: 160px;
@@ -67,23 +80,36 @@
       background: linear-gradient(90deg, var(--blood), var(--blood-deep));
       width: 100%;
     }
+    .hud__note {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text);
+    }
+    .panel--controls {
+      margin-top: 0.35rem;
+      border-style: dashed;
+    }
     a { color: var(--blood); }
   </style>
 </head>
 <body>
   <canvas id="game" width="800" height="600"></canvas>
   <div id="ui">
-    <div class="panel">
-      <div><strong>Controls</strong></div>
-      <div>Move: WASD / Arrows</div>
-      <div>Attack: Space</div>
-      <div>Emote: E</div>
-      <div>Reset vibe: R</div>
-      <div style="margin-top:6px;">Placeholder colors change per state (idle, walk, attack, emote, death). Swap in sprites per state/direction later.</div>
-    </div>
     <div class="panel hud">
-      <div>HP</div>
-      <div class="bar"><div id="hp-fill" class="bar__fill"></div></div>
+      <div class="hud__top">
+        <div>HP</div>
+        <div class="bar"><div id="hp-fill" class="bar__fill"></div></div>
+      </div>
+      <div class="hud__note" id="controls-hint">Press C for Controls</div>
+      <div class="panel panel--controls" id="controls-panel" hidden>
+        <div><strong>Controls</strong></div>
+        <div>Move: WASD / Arrows</div>
+        <div>Attack: Space</div>
+        <div>Emote: E</div>
+        <div>Reset Game: R</div>
+        <div>Exit Full Screen: Esc</div>
+      </div>
     </div>
   </div>
   <script>
@@ -91,6 +117,8 @@
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = false;
     const hpFill = document.getElementById('hp-fill');
+    const controlsPanel = document.getElementById('controls-panel');
+    const controlsHint = document.getElementById('controls-hint');
 
     // --- Core config -------------------------------------------------------
     const TILE = 64;
@@ -103,6 +131,17 @@
     let gameStarted = false;      // Player has chosen to enter the game.
     let gameInitialized = false;  // Assets and world constructed.
     let highScore = 0; // Dummy for now.
+    let controlsVisible = false;
+
+    const updateControlsPanel = () => {
+      if (controlsPanel) {
+        controlsPanel.hidden = !controlsVisible;
+      }
+      if (controlsHint) {
+        controlsHint.textContent = controlsVisible ? 'Hide Controls (C)' : 'Press C for Controls';
+      }
+    };
+    updateControlsPanel();
 
     const colors = {
       sand: getComputedStyle(document.documentElement).getPropertyValue('--sand').trim(),
@@ -278,6 +317,17 @@
 
     window.addEventListener('keydown', (e) => {
       const keyLower = e.key.toLowerCase();
+
+      if (keyLower === 'c') {
+        controlsVisible = !controlsVisible;
+        updateControlsPanel();
+        e.preventDefault();
+        return;
+      }
+
+      if (keyLower === 'escape' && window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'EXIT_GAME_FULLSCREEN' }, '*');
+      }
 
       if (!gameStarted && (keyLower === 'enter' || keyLower === ' ' || keyLower === 'space')) {
         e.preventDefault();
@@ -1012,7 +1062,7 @@
       const h = canvas.height;
 
       ctx.save();
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.82)';
+      ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, w, h);
 
       ctx.textAlign = 'center';
@@ -1025,8 +1075,8 @@
 
       ctx.fillStyle = '#f5e9d0';
       ctx.font = '18px "VT323", monospace';
-      ctx.fillText('BEGIN YOUR JOURNEY', w / 2, h / 2 + 5);
-      ctx.fillText('PRESS ENTER, SPACE, OR CLICK', w / 2, h / 2 + 35);
+      ctx.fillText('PRESS ENTER, SPACE, OR CLICK', w / 2, h / 2 + 5);
+      ctx.fillText('TO BEGIN YOUR JOURNEY', w / 2, h / 2 + 35);
 
       const scoreText = String(highScore).padStart(6, '0');
       ctx.fillText(`HIGH SCORE  ${scoreText}`, w / 2, h / 2 + 75);

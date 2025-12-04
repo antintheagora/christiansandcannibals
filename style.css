@@ -883,6 +883,19 @@ p {
     color: var(--text-color);
 }
 
+.game-disclaimer {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.5rem;
+    color: var(--primary-red);
+    font-family: var(--font-header);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: rgba(0, 0, 0, 0.65);
+    white-space: nowrap;
+    font-size: clamp(0.55rem, 1.6vw, 0.85rem);
+}
+
 .game-shell {
     margin-top: 0;
     border: 2px solid var(--primary-red);
@@ -892,6 +905,8 @@ p {
     max-width: 100%;
     aspect-ratio: 4 / 3;
     overflow: hidden;
+    overscroll-behavior: contain;
+    touch-action: none;
 }
 
 .game-shell iframe {
@@ -1486,7 +1501,8 @@ footer {
     line-height: 1.5;
     color: #ff9999;
     text-transform: none;
-    white-space: nowrap;
+    /* white-space: nowrap;  <-- REMOVE THIS */
+    text-align: center;
 }
 
 .footer-quote cite {
@@ -1611,7 +1627,7 @@ footer {
 }
 
 .soundtrack-intro {
-    color: #ff5c5c;
+    color: #ffffff;
     font-size: 1.8rem;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -1826,12 +1842,12 @@ footer {
     color: var(--primary-red);
 }
 
-.download-tracklist-inner p {
-    margin: 0 0 0.85rem 0;
-    font-size: 1.15rem;
+.download-track {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.1rem;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: #ff4747;
+    color: #ff5e5e;
 }
 
 .download-track-number {
@@ -1845,6 +1861,28 @@ footer {
     color: #ff6f6f;
     font-weight: 700;
     text-shadow: 0 0 8px rgba(255, 69, 69, 0.4);
+}
+
+.download-track-artist {
+    color: #ffe49b;
+    font-weight: 600;
+    margin-left: 0.25rem;
+}
+
+.download-track-credits {
+    display: block;
+    margin-left: 3rem;
+    margin-top: 0.35rem;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    color: #ffb1b1;
+}
+
+.download-track--note {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    letter-spacing: 4px;
+    color: #ffc6c6;
 }
 
 .download-tracklist {
@@ -2063,18 +2101,53 @@ footer {
 }
 
 .track-list li {
-    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 5px;
+    padding: 0.5rem 0.5rem;
     border-bottom: 1px solid #1b0000;
     cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    text-align: left;
 }
 
 .track-list li:hover,
 .track-list li.is-active {
     background: rgba(255, 0, 0, 0.15);
     color: var(--primary-red);
+}
+
+.track-label__title {
+    color: #ff6f6f;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.track-label__artist {
+    color: #ffe49b;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.track-label__dash {
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0;
+}
+
+#current-track {
+    display: flex;
+    gap: 5px;
+    align-items: baseline;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+#current-track .track-label__title {
+    font-size: 1.1rem;
+}
+
+#current-track .track-label__artist {
+    font-size: 1rem;
 }
 
 .audio-controls {
