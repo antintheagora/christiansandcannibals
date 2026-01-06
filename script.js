@@ -650,7 +650,7 @@ const galleryLightbox = (() => {
     const discElement = document.querySelector('.spinning-disc');
     const downloadToggle = document.querySelector('.download-toggle');
     const downloadPanel = document.getElementById('download-panel');
-    const downloadButton = document.querySelector('.download-button[data-download-files]');
+    const downloadButtons = document.querySelectorAll('.download-button[data-download-files]');
 
     if (!audioEl || !trackListEl || !playBtn || !prevBtn || !nextBtn || !seekEl || !currentTrackEl || !discArtEl || !volumeEl) {
         return;
@@ -966,9 +966,7 @@ const galleryLightbox = (() => {
         discElement.addEventListener('pointerleave', handlePointerLeave);
     }
 
-    if (downloadButton) {
-        const fileList = downloadButton.dataset.downloadFiles?.split('|').map(path => path.trim()).filter(Boolean);
-
+    if (downloadButtons.length) {
         const encodePath = (path) => encodeURI(path)
             .replace(/#/g, '%23')
             .replace(/\?/g, '%3F')
@@ -985,8 +983,13 @@ const galleryLightbox = (() => {
             tempLink.remove();
         };
 
-        if (fileList?.length) {
-            downloadButton.addEventListener('click', (event) => {
+        downloadButtons.forEach((button) => {
+            const fileList = button.dataset.downloadFiles?.split('|').map(path => path.trim()).filter(Boolean);
+            if (!fileList?.length) {
+                return;
+            }
+
+            button.addEventListener('click', (event) => {
                 // Allow modifier clicks to open in new tab/default behavior
                 if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
                     return;
@@ -999,7 +1002,7 @@ const galleryLightbox = (() => {
                     }, index * 300);
                 });
             });
-        }
+        });
     }
 
     if (downloadToggle && downloadPanel) {

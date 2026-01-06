@@ -1913,16 +1913,22 @@ footer {
     grid-column: 1 / -1;
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.6rem;
 }
 
 .download-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border: 1px solid var(--primary-red);
-    padding: 0.9rem 2.5rem;
+    padding: 0.7rem 1.6rem;
     text-decoration: none;
     color: var(--primary-red);
-    letter-spacing: 4px;
+    letter-spacing: 3px;
     text-transform: uppercase;
     font-family: var(--font-header);
+    font-size: 0.95rem;
     text-shadow: 0 0 12px rgba(255, 0, 0, 0.8);
     box-shadow: 0 0 18px rgba(255, 0, 0, 0.5), 0 0 40px rgba(255, 0, 0, 0.35);
     background: rgba(0, 0, 0, 0.5);
