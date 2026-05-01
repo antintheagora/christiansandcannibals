@@ -936,7 +936,8 @@ p {
     text-transform: uppercase;
     letter-spacing: 2px;
     background: rgba(0, 0, 0, 0.65);
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
     font-size: clamp(0.55rem, 1.6vw, 0.85rem);
 }
 
@@ -1714,7 +1715,7 @@ footer {
 
 @media (max-width: 600px) {
     .lion-marquee {
-        width: min(320px, 95vw);
+        width: min(320px, 100%);
     }
 }
 
@@ -1724,9 +1725,16 @@ footer {
     padding: 2rem;
     background: rgba(5, 0, 0, 0.85);
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 2rem;
     align-items: center;
+}
+
+@media (max-width: 600px) {
+    .soundtrack-player {
+        padding: 1rem;
+        gap: 1.5rem;
+    }
 }
 
 .mural-wrap {
@@ -2088,8 +2096,9 @@ footer {
 
 .spinning-disc {
     position: relative;
-    width: 220px;
-    height: 220px;
+    width: min(220px, 100%);
+    aspect-ratio: 1 / 1;
+    height: auto;
     border-radius: 50%;
     border: 2px solid var(--dim-red);
     background: #050000;
@@ -2154,6 +2163,7 @@ footer {
     display: flex;
     align-items: baseline;
     justify-content: flex-start;
+    flex-wrap: wrap;
     gap: 5px;
     padding: 0.5rem 0.5rem;
     border-bottom: 1px solid #1b0000;
@@ -2186,6 +2196,7 @@ footer {
 
 #current-track {
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
     align-items: baseline;
     text-align: left;
